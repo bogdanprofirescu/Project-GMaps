@@ -1,0 +1,103 @@
+
+
+html, body, #main {
+    height:100%;
+    width: 100%;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    overflow-x: hidden; /* Disable horizontal scroll */
+    overflow-y: hidden;
+    }
+
+#pano {
+   width: 250px;
+   height: 250px;
+ }
+#map{
+      z-index: 1;
+      height:100%;
+      width: 100%;
+}
+
+#main {
+    position: fixed;
+    margin-left: 0;
+}
+
+#start_btn
+{
+  position: absolute;
+  padding: 5;
+  margin: 0;
+  top: 0;
+  z-index: 3;
+  font-size: 20px;
+  color: white;
+  cursor: pointer;
+ }
+
+#start_btn_background
+{
+  width: 100px;
+  height: 35px;
+  position: absolute;
+  padding: 5;
+  margin: 0;
+  top: 0;
+  background: rgba(0,0,0, 0.6);
+  z-index: 2;
+}
+
+
+.sidenav {
+    height: 100%; /* 100% Full-height */
+    width: 0; /* 0 width - change this with JavaScript */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Stay on top */
+    top: 0;
+    left: 0;
+    background: rgba(165,163,165, 0.8);
+    overflow-x: hidden; /* Disable horizontal scroll */
+    overflow-y: hidden;
+    padding-top: 60px; /* Place content 60px from the top */
+    transition: 0.5s; /* 0.5 second transition effect to slide in the sidenav */
+    font-size: 16px;
+    /*position: absolute;
+    top: 0;*/
+}
+
+#navigation_items {
+  padding: 5px;
+}
+
+
+.sidenav a:hover, .offcanvas a:focus{
+    color: #f1f1f1;
+}
+
+#close_btn {
+/*padding-top: 0;
+padding-right: 0;*/
+}
+
+
+
+
+
+
+/* On smaller screens less padding, smaller fonts size) */
+@media screen and (max-width: 700px) {
+
+    .sidenav {padding-top: 20px;
+      font-size: 12px;
+      font-weight: bold;
+     }
+
+    #start_btn, #close_btn {
+      font-size: 16px;
+    }
+    #start_btn_background
+        {
+                width: 75px;
+                height: 25px; }
+}
