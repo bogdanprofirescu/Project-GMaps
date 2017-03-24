@@ -22,12 +22,12 @@
          <a href="javascript:void(0)" id="close_btn"><strong>&times;</strong></a>
          <br>
           <div id="navigation_items" class="form-group">
-            <p>Type a city name and choose place to see proeminent attractions anywhere in the world!<p>
+            <p id="instructions">Type a city name and choose place to see proeminent attractions anywhere in the world!<p>
             <p class="label">Enter a city:
             <input id="areaChoice"  type="text" placeholder="enter city" value="Brasov">
             </p>
-            <p class="label">In a range of(meters):
-            <input id="range"  type="text" placeholder="range in meters" value="10000">
+            <p class="label">Range from city center(meters):
+            <input id="range"  type="text" placeholder="range in meters,max 50000" value="10000">
             </p>
             <p class="label">Choose a type of place:
             <select id="typeOfPlace"  value="">
@@ -45,7 +45,7 @@
               <option value="zoo">zoo</option>
             </select>
           </p>
-          <button type="button" id="searchBttn">Start search</button>
+          <button type="button"  id="searchBttn" class="label" >Start search</button>
 
         </div>
         <div id="places">

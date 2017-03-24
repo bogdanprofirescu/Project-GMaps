@@ -4,9 +4,9 @@ document.getElementById("close_btn").addEventListener('click',closeMenu,false);
 
 //this function is a candidate for knockout.js
 window.onload= function() {
-// document.getElementById("areaChoice").addEventListener('change', focusChosenArea);
-// document.getElementById("typeOfPlace").addEventListener('change', focusChosenArea);
-document.getElementById("searchBttn").addEventListener('click', focusChosenArea);
+// document.getElementById("areaChoice").addEventListener('change', findNewCenter);
+// document.getElementById("typeOfPlace").addEventListener('change', findNewCenter);
+document.getElementById("searchBttn").addEventListener('click', findNewCenter);
 };
 
 
@@ -74,11 +74,11 @@ if (typeof google === 'undefined') alert("google api not loaded");
   mapBounds = new google.maps.LatLngBounds();
   mapBoundsReset= new google.maps.LatLngBounds();
   infowindow= new google.maps.InfoWindow();
-  focusChosenArea();
+  findNewCenter();
   };
 
 
-  function focusChosenArea()
+  function findNewCenter()
       {
         var geocoder = new google.maps.Geocoder();
         geocoder.geocode(
@@ -87,7 +87,7 @@ if (typeof google === 'undefined') alert("google api not loaded");
             if (status == google.maps.GeocoderStatus.OK) {
                      {
                       //  map.setCenter(results[0].geometry.location);
-                       findPlaces(results[0].geometry.location, typeOfPlaceSelected.value,range.value);
+                       findPlacesNearNewCenter(results[0].geometry.location, typeOfPlaceSelected.value,range.value);
                             };
             }
                    else {
@@ -97,7 +97,7 @@ if (typeof google === 'undefined') alert("google api not loaded");
           });
       }
 
-      function findPlaces(newCenter,typeOfPlaceSelected,rangeValue) {
+      function findPlacesNearNewCenter(newCenter,typeOfPlaceSelected,rangeValue) {
         console.log(rangeValue);
         var service = new google.maps.places.PlacesService(map);
 
@@ -117,8 +117,13 @@ if (typeof google === 'undefined') alert("google api not loaded");
                                     mapBounds=mapBoundsReset;
                                     for (var i = 0; i < results.length; i++)
                                             {
-                                                var newPlaceToMark={title: results[i].name, location:{lat: results[i].geometry.location.lat(), lng: results[i].geometry.location.lng()}};
+                                                var newPlaceToMark={ title: results[i].name,
+                                                                    location: {lat: results[i].geometry.location.lat(),
+                                                                              lng: results[i].geometry.location.lng()}
+                                                                    };
+                                                console.log(results[i].reference);
                                                 // createListItem(newPlaceToMark);
+                                                createListItem(results[i].reference);
                                                 createMarker(newPlaceToMark,i);
                                             }
                                 TransitionToNewLocation(newCenter);
@@ -143,15 +148,41 @@ if (typeof google === 'undefined') alert("google api not loaded");
 
           function createListItem(listItem)
           {
-              var string;
-                string='<div class="placeDiv"><p class="placeName">'+listItem.title+'</p>'+
-                        '<img src=' +'"'+'http://maps.googleapis.com/maps/api/streetview?location='+
-                                  listItem.location.lat+','+
-                                  listItem.location.lng+'&size=80x92'+
-                                  '&key=AIzaSyARDaZozs7u65RbsBI4Xjwx7jJJ87iUAjY'+
-                                  '"></div>';
 
-            divSideNavPlaces.innerHTML = divSideNavPlaces.innerHTML + string;
+            //  https://developers.google.com/places/web-service/photos
+              var string;
+              //old streetview version
+                // string='<div class="placeDiv"><p class="placeName">'+listItem.title+'</p>'+
+                //         '<img src=' +'"'+'http://maps.googleapis.com/maps/api/streetview?location='+
+                //                   listItem.location.lat+','+
+                //                   listItem.location.lng+'&size=80x92'+
+                //                   '&key=AIzaSyARDaZozs7u65RbsBI4Xjwx7jJJ87iUAjY'+
+                //                   '"></div>';
+
+                // string='<div class="placeDiv"><p class="placeName">'+listItem.title+'</p>'+
+                //         '<img src=' +'"'+'https://maps.googleapis.com/maps/api/place/photo?maxwidth=80&photoreference='+
+                //                     listItem+
+                //                   '&key=AIzaSyARDaZozs7u65RbsBI4Xjwx7jJJ87iUAjY'+
+                //                   '"></div>';
+            string='https://maps.googleapis.com/maps/api/place/photo?maxwidth=80&photoreference='+ listItem +'&key=AIzaSyARDaZozs7u65RbsBI4Xjwx7jJJ87iUAjY';
+            console.log(string);
+
+            // var photo = place.photos[0].getUrl(string);
+            // console.log(photo);
+            // divSideNavPlaces.innerHTML = divSideNavPlaces.innerHTML + string;
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', string, true);
+            xhr.send();
+            xhr.addEventListener("readystatechange", processRequest, false);
+            xhr.onreadystatechange = processRequest;
+
+            function processRequest(e) {
+              if (xhr.readyState == 4 && xhr.status == 200) {
+                       console.log(xhr.responseText);
+                  }
+            }
+
+
           }
 
 
