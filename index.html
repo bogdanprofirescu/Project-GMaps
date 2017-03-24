@@ -11,7 +11,6 @@
   </head>
 
     <body>
-
        <div id="main">
         <div id="map"></div>
         <div id="start_btn_background">
@@ -19,27 +18,37 @@
             <br>
         </div>
       </div>
-
-
        <div id="navigationBar" class="sidenav">
-         <div id="navigation_items">
-          <a href="javascript:void(0)" id="close_btn"><strong>&times;</strong></a>
-          <p>Choose a city name and we will suggest the palces to see!<p>
-            <input id="areaChoice" type="text" placeholder="enter city" value="Brasov">
-            <select id="typeOfPlace" value="">
-              <option value="art_gallery">art_gallery</option>
+         <a href="javascript:void(0)" id="close_btn"><strong>&times;</strong></a>
+         <br>
+          <div id="navigation_items" class="form-group">
+            <p>Type a city name and choose place to see proeminent attractions anywhere in the world!<p>
+            <p class="label">Enter a city:
+            <input id="areaChoice"  type="text" placeholder="enter city" value="Brasov">
+            </p>
+            <p class="label">In a range of(meters):
+            <input id="range"  type="text" placeholder="range in meters" value="10000">
+            </p>
+            <p class="label">Choose a type of place:
+            <select id="typeOfPlace"  value="">
+              <option value="art gallery">art gallery</option>
               <option value="bar">bar</option>
               <option value="church">church</option>
               <option value="castle">castle</option>
               <option value="lodging">lodging</option>
-              <option value="museum">museum</option>
+              <option value="museum" selected="">museum</option>
               <option value="park">park</option>
               <option value="restaurant">restaurant</option>
-              <option value="shopping_mall">shopping_mall</option>
+              <option value="shopping mall">shopping mall</option>
               <option value="spa">spa</option>
               <option value="store">store</option>
               <option value="zoo">zoo</option>
             </select>
+          </p>
+          <button type="button" id="searchBttn">Start search</button>
+
+        </div>
+        <div id="places">
 
         </div>
       </div>
@@ -52,6 +61,6 @@
 
     <!-- <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script> -->
-  </body>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+  </body> -->
 </html>

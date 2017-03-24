@@ -44,7 +44,7 @@ html, body, #main {
   padding: 5;
   margin: 0;
   top: 0;
-  background: rgba(0,0,0, 0.6);
+  background: rgba(0,0,0, 0.7);
   z-index: 2;
 }
 
@@ -56,41 +56,66 @@ html, body, #main {
     z-index: 1; /* Stay on top */
     top: 0;
     left: 0;
-    background: rgba(165,163,165, 0.8);
+    background: rgba(0,0,0, 0.7);
     overflow-x: hidden; /* Disable horizontal scroll */
-    overflow-y: hidden;
-    padding-top: 60px; /* Place content 60px from the top */
+    /*overflow-y: hidden;*/
+    /*padding-top: 60px; /* Place content 60px from the top */
     transition: 0.5s; /* 0.5 second transition effect to slide in the sidenav */
-    font-size: 16px;
+    font-size: 14px;
+
     /*position: absolute;
     top: 0;*/
 }
 
-#navigation_items {
-  padding: 5px;
+.sidenav p {
+  color: white;
+}
+.label {
+  font-size: 14px;
+  font-weight: lighter;
+  margin-left: 0;
+  margin-right: 0;
+  margin-top:7px;
+  margin-bottom: 7px;
 }
 
+.sidenav a {
+  color: red;
+}
 
-.sidenav a:hover, .offcanvas a:focus{
+.sidenav a:hover {
     color: #f1f1f1;
 }
 
 #close_btn {
-/*padding-top: 0;
-padding-right: 0;*/
+float: right;
+top: 0;
 }
 
+input, select, button {
+  width: 80%;
+  padding: 0;
+  border: 0;
+ line-height: 1.5em;
+}
 
-
+.placeName
+{
+  font-size: 12px;
+}
 
 
 
 /* On smaller screens less padding, smaller fonts size) */
 @media screen and (max-width: 700px) {
 
-    .sidenav {padding-top: 20px;
+    .sidenav {
+      /*padding-top: 20px;*/
       font-size: 12px;
       font-weight: bold;
+     }
+     .label {
+       font-size: 12px;
      }
 
     #start_btn, #close_btn {
