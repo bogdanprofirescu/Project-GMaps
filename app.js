@@ -150,37 +150,19 @@ if (typeof google === 'undefined') alert("google api not loaded");
       function createListItem(placeID,newPlaceToMark,i)
           {
 
-              var string;
+
               var src='https://maps.googleapis.com/maps/api/place/details/json?placeid='+placeID+'&key=AIzaSyARDaZozs7u65RbsBI4Xjwx7jJJ87iUAjY';
 
-            // $.ajax({
-                  //     url: src,
-                  //     dataType: 'jsonp',
-                  //     success: function(dataWeGotViaJsonp){
-                  //
-                  //           console.log(dataWeGotViaJsonp);
-                  //         }
-                  //
-                  //     }
-                  // });
-
-                  $.getJSON(src, function(data){
+              $.getJSON(src, function(data){
                                   console.log(data);
                                           }
                       ).fail( function() {
-                  console.log("un rahat");
+                  console.log("error");
                 } );
 
 
-            // console.log(src);
-
-            divSideNavPlaces.innerHTML+=string;
-            var divId="placeDiv"+i;
-            // console.log(divId);
-            // document.getElementById(divId).addEventListener('click',clickImage,false);
-
                }
-               
+
 
                 function clickImage()
                   {
