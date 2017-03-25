@@ -23,14 +23,15 @@ var divSideNavPlaces = document.getElementById('places');
 function openMenu() {
   sidenav_items.style.display="none";
   start_btn_background.style.display="none";
-  if (window.innerWidth<700) navigationBar.style.width = "160px";
-      else navigationBar.style.width = "235px";
+  // if (window.innerWidth<700) navigationBar.style.width = "160px";
+  //     else navigationBar.style.width = "235px";
+  navigationBar.style.width = "160px";
   sidenav_items.style.display="";
   navigationBar.style.padding= "3px";
   }
 
 function closeMenu() {
-  start_btn_background.style.display="";
+    start_btn_background.style.display="block";
   // sidenav_items.style.display="none";
     navigationBar.style.width = "0";
     navigationBar.style.padding= "0";
@@ -121,7 +122,7 @@ if (typeof google === 'undefined') alert("google api not loaded");
                                                                     location: {lat: results[i].geometry.location.lat(),
                                                                               lng: results[i].geometry.location.lng()}
                                                                     };
-                                                console.log(results[i].reference);
+                                                // console.log(results[i].reference);
                                                 // createListItem(newPlaceToMark);
                                                 createListItem(results[i].reference);
                                                 createMarker(newPlaceToMark,i);
@@ -164,27 +165,31 @@ if (typeof google === 'undefined') alert("google api not loaded");
                 //                     listItem+
                 //                   '&key=AIzaSyARDaZozs7u65RbsBI4Xjwx7jJJ87iUAjY'+
                 //                   '"></div>';
-            string='https://maps.googleapis.com/maps/api/place/photo?maxwidth=80&photoreference='+ listItem +'&key=AIzaSyARDaZozs7u65RbsBI4Xjwx7jJJ87iUAjY';
+            string='https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference='+ listItem +'&key=AIzaSyARDaZozs7u65RbsBI4Xjwx7jJJ87iUAjY';
+            //below is the example from google photo reference API
+            // string="https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=CnRtAAAATLZNl354RwP_9UKbQ_5Psy40texXePv4oAlgP4qNEkdIrkyse7rPXYGd9D_Uj1rVsQdWT4oRz4QrYAJNpFX7rzqqMlZw2h2E2y5IKMUZ7ouD_SlcHxYq1yL4KbKUv3qtWgTK0A6QbGh87GB3sscrHRIQiG2RrmU_jF4tENr9wGS_YxoUSSDrYjWmrNfeEHSGSc3FyhNLlBU&key=";
+            // string=string+'AIzaSyARDaZozs7u65RbsBI4Xjwx7jJJ87iUAjY';
             console.log(string);
-            string="https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=CnRtAAAATLZNl354RwP_9UKbQ_5Psy40texXePv4oAlgP4qNEkdIrkyse7rPXYGd9D_Uj1rVsQdWT4oRz4QrYAJNpFX7rzqqMlZw2h2E2y5IKMUZ7ouD_SlcHxYq1yL4KbKUv3qtWgTK0A6QbGh87GB3sscrHRIQiG2RrmU_jF4tENr9wGS_YxoUSSDrYjWmrNfeEHSGSc3FyhNLlBU&key="
-            string=string+'AIzaSyARDaZozs7u65RbsBI4Xjwx7jJJ87iUAjY'
             // var photo = place.photos[0].getUrl(string);
             // console.log(photo);
             // divSideNavPlaces.innerHTML = divSideNavPlaces.innerHTML + string;
-            var xhr = new XMLHttpRequest();
-            xhr.open('GET', string, true);
-            xhr.send();
-            xhr.addEventListener("readystatechange", processRequest, false);
-            xhr.onreadystatechange = processRequest;
+            // var xhr = new XMLHttpRequest();
+            // xhr.open('GET', string, true);
+            // xhr.send();
+            // xhr.addEventListener("readystatechange", processRequest, false);
+            // xhr.onreadystatechange = processRequest;
+            //
+            // function processRequest(e) {
+            //   if (xhr.readyState == 4 && xhr.status == 200) {
+            //            console.log(xhr.responseText);
+            //       }
+            // }
 
-            function processRequest(e) {
-              if (xhr.readyState == 4 && xhr.status == 200) {
-                       console.log(xhr.responseText);
-                  }
-            }
+        //     $.ajax({url: string, error: function(xhr){
+        //     alert("An error occured: " + xhr.status + " " + xhr.statusText);
+        // }})
 
-
-          }
+         }
 
 
 

@@ -31,21 +31,22 @@ html, body, #main {
   margin: 0;
   top: 0;
   z-index: 3;
-  font-size: 20px;
+  font-size: 16px;
   color: white;
   cursor: pointer;
  }
 
 #start_btn_background
 {
-  width: 100px;
-  height: 35px;
+  width: 70px;
+  height: 25px;
   position: absolute;
   padding: 5;
   margin: 0;
   top: 0;
   background: rgba(0,0,0, 0.7);
   z-index: 2;
+  display: none;
 }
 
 
@@ -58,6 +59,7 @@ html, body, #main {
     left: 0;
     background: rgba(0,0,0, 0.7);
     overflow-x: hidden; /* Disable horizontal scroll */
+    width: 160px;
     /*overflow-y: hidden;*/
     /*padding-top: 60px; /* Place content 60px from the top */
     transition: 0.5s; /* 0.5 second transition effect to slide in the sidenav */
