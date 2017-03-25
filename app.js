@@ -153,17 +153,23 @@ if (typeof google === 'undefined') alert("google api not loaded");
               var string;
               var src='https://maps.googleapis.com/maps/api/place/details/json?placeid='+placeID+'&key=AIzaSyARDaZozs7u65RbsBI4Xjwx7jJJ87iUAjY';
 
-        var xhr = new XMLHttpRequest();
-              xhr.open('GET',src, true);
-              xhr.send();
-              xhr.onreadystatechange = processRequest;
+            // $.ajax({
+                  //     url: src,
+                  //     dataType: 'jsonp',
+                  //     success: function(dataWeGotViaJsonp){
+                  //
+                  //           console.log(dataWeGotViaJsonp);
+                  //         }
+                  //
+                  //     }
+                  // });
 
-              function processRequest(e) {
-                if (xhr.readyState == 4 && xhr.status == 200) {
-                  var response = JSON.parse(xhr.responseText);
-                  console.log(response);
-                      }
-              }
+                  $.getJSON(src, function(data){
+                                  console.log(data);
+                                          }
+                      ).fail( function() {
+                  console.log("un rahat");
+                } );
 
 
             // console.log(src);
@@ -174,6 +180,7 @@ if (typeof google === 'undefined') alert("google api not loaded");
             // document.getElementById(divId).addEventListener('click',clickImage,false);
 
                }
+               
 
                 function clickImage()
                   {
