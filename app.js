@@ -27,7 +27,7 @@ function openMenu() {
   //     else navigationBar.style.width = "235px";
   navigationBar.style.width = "160px";
   sidenav_items.style.display="";
-  navigationBar.style.padding= "3px";
+  navigationBar.style.padding= "10px";
   }
 
 function closeMenu() {
@@ -122,9 +122,9 @@ if (typeof google === 'undefined') alert("google api not loaded");
                                                                     location: {lat: results[i].geometry.location.lat(),
                                                                               lng: results[i].geometry.location.lng()}
                                                                     };
-                                                // console.log(results[i].reference);
-                                                // createListItem(newPlaceToMark);
-                                                createListItem(results[i].reference);
+                                                // console.log(results[i]);
+                                                // console.log(results[i].place_id);
+                                                createListItem(results[i].place_id, newPlaceToMark, i);
                                                 createMarker(newPlaceToMark,i);
                                             }
                                 TransitionToNewLocation(newCenter);
@@ -138,7 +138,7 @@ if (typeof google === 'undefined') alert("google api not loaded");
               map.setZoom(12);
               map.panTo(newCenter);
               // only in this succesion I manage to center the map at the right zoom
-              console.log("zoom after new center:", map.getZoom());
+              // console.log("zoom after new center:", map.getZoom());
       }
 
       function clearList()
@@ -147,18 +147,38 @@ if (typeof google === 'undefined') alert("google api not loaded");
           divSideNavPlaces.innerHTML="";
       }
 
-          function createListItem(listItem)
+      function createListItem(placeID,newPlaceToMark,i)
           {
 
               var string;
-              string='<div class="placeDiv"><p class="placeName">'+listItem.title+'</p>'+
-                        '<img src=' +'"'+'https://maps.googleapis.com/maps/api/place/photo?photoreference='+
-                                    listItem+'&sensor=false&maxheight=92&maxwidth=80'+
-                                  '&key=AIzaSyARDaZozs7u65RbsBI4Xjwx7jJJ87iUAjY'+
-                                  '"></div>';
+              var src='https://maps.googleapis.com/maps/api/place/details/json?placeid='+placeID+'&key=AIzaSyARDaZozs7u65RbsBI4Xjwx7jJJ87iUAjY';
+
+        var xhr = new XMLHttpRequest();
+              xhr.open('GET',src, true);
+              xhr.send();
+              xhr.onreadystatechange = processRequest;
+
+              function processRequest(e) {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                  var response = JSON.parse(xhr.responseText);
+                  console.log(response);
+                      }
+              }
+
+
+            // console.log(src);
+
             divSideNavPlaces.innerHTML+=string;
-            console.log(string);
+            var divId="placeDiv"+i;
+            // console.log(divId);
+            // document.getElementById(divId).addEventListener('click',clickImage,false);
+
                }
+
+                function clickImage()
+                  {
+                      alert("image was clicked");
+                }
 
 
 
