@@ -160,12 +160,14 @@ if (typeof google === 'undefined') alert("google api not loaded");
                 //                   '&key=AIzaSyARDaZozs7u65RbsBI4Xjwx7jJJ87iUAjY'+
                 //                   '"></div>';
 
-                // string='<div class="placeDiv"><p class="placeName">'+listItem.title+'</p>'+
-                //         '<img src=' +'"'+'https://maps.googleapis.com/maps/api/place/photo?maxwidth=80&photoreference='+
-                //                     listItem+
-                //                   '&key=AIzaSyARDaZozs7u65RbsBI4Xjwx7jJJ87iUAjY'+
-                //                   '"></div>';
-            string='https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference='+ listItem +'&key=AIzaSyARDaZozs7u65RbsBI4Xjwx7jJJ87iUAjY';
+                string='<div class="placeDiv"><p class="placeName">'+listItem.title+'</p>'+
+                        '<img src=' +'"'+'https://maps.googleapis.com/maps/api/place/photo?photoreference='+
+                                    listItem+'&sensor=false&maxheight=92&maxwidth=80'+
+                                  '&key=AIzaSyARDaZozs7u65RbsBI4Xjwx7jJJ87iUAjY'+
+                                  '"></div>';
+              // https://maps.googleapis.com/maps/api/place/photo?photoreference=PHOTO_REFERENCE&sensor=false&maxheight=MAX_HEIGHT&maxwidth=MAX_WIDTH&key=YOUR_API_KEY
+
+            // string='https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference='+ listItem +'&key=AIzaSyARDaZozs7u65RbsBI4Xjwx7jJJ87iUAjY';
             //below is the example from google photo reference API
             // string="https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=CnRtAAAATLZNl354RwP_9UKbQ_5Psy40texXePv4oAlgP4qNEkdIrkyse7rPXYGd9D_Uj1rVsQdWT4oRz4QrYAJNpFX7rzqqMlZw2h2E2y5IKMUZ7ouD_SlcHxYq1yL4KbKUv3qtWgTK0A6QbGh87GB3sscrHRIQiG2RrmU_jF4tENr9wGS_YxoUSSDrYjWmrNfeEHSGSc3FyhNLlBU&key=";
             // string=string+'AIzaSyARDaZozs7u65RbsBI4Xjwx7jJJ87iUAjY';
