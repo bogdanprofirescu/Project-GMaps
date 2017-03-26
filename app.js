@@ -4,8 +4,6 @@ document.getElementById("close_btn").addEventListener('click',closeMenu,false);
 
 //this function is a candidate for knockout.js
 window.onload= function() {
-// document.getElementById("areaChoice").addEventListener('change', findNewCenter);
-// document.getElementById("typeOfPlace").addEventListener('change', findNewCenter);
 document.getElementById("searchBttn").addEventListener('click', findNewCenter);
 };
 
@@ -17,7 +15,7 @@ var main=document.getElementById("main");
 var start_btn_background=document.getElementById("start_btn_background");
 var sidenav_items=document.getElementsByClassName("sidenav")[0];
 var divSideNavPlaces = document.getElementById('places');
-
+var globalTempMarker;
 //open and close menu functions change the sidebar width & hide/show
 // the main menu button
 function openMenu() {
@@ -39,6 +37,7 @@ function closeMenu() {
 
 var map;
 var markers_set=[];
+var places_set=[];
 
 
 var infowindow;
@@ -110,6 +109,7 @@ if (typeof google === 'undefined') alert("google api not loaded");
                               }, callback);
 
               function callback(results, status) {
+
               if (status === google.maps.places.PlacesServiceStatus.OK)
                            {
                                     console.log(results.length);
@@ -125,7 +125,7 @@ if (typeof google === 'undefined') alert("google api not loaded");
                                                 // console.log(results[i]);
                                                 // console.log(results[i].place_id);
                                                 createListItem(results[i].place_id, newPlaceToMark, i);
-                                                createMarker(newPlaceToMark,i);
+                                                createMarker(newPlaceToMark,results[i].place_id);
                                             }
                                 TransitionToNewLocation(newCenter);
                                 }
@@ -150,33 +150,76 @@ if (typeof google === 'undefined') alert("google api not loaded");
       function createListItem(placeID,newPlaceToMark,i)
           {
 
+              var string;
+              var service = new google.maps.places.PlacesService(map);
 
-              var src='https://maps.googleapis.com/maps/api/place/details/json?placeid='+placeID+'&key=AIzaSyARDaZozs7u65RbsBI4Xjwx7jJJ87iUAjY';
+              // https://developers.google.com/maps/documentation/javascript/examples/place-details
 
-              $.getJSON(src, function(data){
-                                  console.log(data);
-                                          }
-                      ).fail( function() {
-                  console.log("error");
-                } );
+              service.getDetails({
+                           placeId: placeID
+                          }, function(place, status) {
+                           if (status === google.maps.places.PlacesServiceStatus.OK) {
+                                         string='<div><p class="placeName">'+ place.name+'</p>'+
+                                                  '<img id="' + placeID +'"'+ ' src='
+                                                   + place.photos[0].getUrl({'maxWidth': 80, 'maxHeight': 92})+'"> </div>';
+                                         divSideNavPlaces.innerHTML = divSideNavPlaces.innerHTML + string;
+                                         places_set.push(place);
+                                        //  console.log(place);
+                                        //  console.log(string);
+                                                          }
+                                                });
 
 
-               }
+             }
+
+             var listOfPlaces = document.querySelector("#places");
+             listOfPlaces.addEventListener("click", highlightPicture, false);
+             function highlightPicture(e) {
+                             if (e.target !== e.currentTarget) {
+                                         var clickedItem = e.target.id;
+                                         // alert("Hello " + clickedItem);
+                                         // console.log(e.target.id);
+                                         for (var i=0; i<markers_set.length;i++)
+                                          if (markers_set[i].id===e.target.id) {
+                                                                       console.log(markers_set[i].title);
+                                                                      //  console.log(markers_set[i]);
+                                                                       markers_set[i].icon=makeMarkerIcon('bf6c1c');
+                                                                      //from stackoverflow
+                                                                      //http://stackoverflow.com/questions/14657779/google-maps-bounce-animation-on-marker-for-a-limited-period
+                                                                      for (var x = 0; x < 5; x++)
+                                                                                {   markers_set[i].setAnimation(google.maps.Animation.BOUNCE);
+                                                                                    stopAnimation(markers_set[i]);
+                                                                                  };
+                                                                                  function stopAnimation(marker) {
+                                                                                      setTimeout(function () {
+                                                                                                      marker.setAnimation(null);
+                                                                                                    // marker.icon=makeMarkerIcon('0091ff');
+                                                                                                  }, 3000);
+                                                                                                };
+                                                                      // console.log(places_set[i].url);
+                                                                      window.open(places_set[i].url, "popupWindow", "width=363,height=630,scrollbars=yes");
+
+                                                                                             }
 
 
-                function clickImage()
-                  {
-                      alert("image was clicked");
-                }
+
+                                         }
+                                         e.stopPropagation();
+                                   }
 
 
 
             function eraseMarkers()
             {
+              //need to add erase palces set as well
               console.log('#markers_length:', markers_set.length);
               var array_size=markers_set.length;
+              var places_set_array_size=places_set.length;
+
               for (var i=0; i<markers_set.length; i++) markers_set[i].setMap(null);
               markers_set.splice(0,array_size);
+              places_set.splice(0,places_set_array_size);
+
               console.log('#markers_new length:', markers_set.length);
             }
 
