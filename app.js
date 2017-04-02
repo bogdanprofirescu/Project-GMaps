@@ -38,6 +38,7 @@ function closeMenu() {
 var map;
 var markers_set=[];
 var places_set=[];
+var events_set=[];
 
 
 var infowindow;
@@ -78,6 +79,8 @@ if (typeof google === 'undefined') alert("google api not loaded");
   };
 
 
+
+
   function findNewCenter()
       {
         var geocoder = new google.maps.Geocoder();
@@ -95,13 +98,15 @@ if (typeof google === 'undefined') alert("google api not loaded");
                         ' specific place.');
                   }
           });
+
+          setTimeout(addEventsListeners,2500);
+
       }
 
       function findPlacesNearNewCenter(newCenter,typeOfPlaceSelected,rangeValue) {
-        console.log(rangeValue);
-        var service = new google.maps.places.PlacesService(map);
 
-            service.nearbySearch({
+        var service = new google.maps.places.PlacesService(map);
+        service.nearbySearch({
                                 location: newCenter,
                                 radius: rangeValue,
                                 keyword: typeOfPlaceSelected,
@@ -109,30 +114,31 @@ if (typeof google === 'undefined') alert("google api not loaded");
                               }, callback);
 
               function callback(results, status) {
+                      if (status === google.maps.places.PlacesServiceStatus.OK)
+                                   {
+                                            // console.log(results.length);
+                                            eraseMarkers();
+                                            clearList();
+                                            mapBounds=mapBoundsReset;
+                                            for (var i = 0; i < results.length; i++)
+                                                    {
+                                                        var newPlaceToMark={ title: results[i].name,
+                                                                            location: {lat: results[i].geometry.location.lat(),
+                                                                                      lng: results[i].geometry.location.lng()}
+                                                                            };
+                                                        // console.log("ask to create place no:",i);
+                                                        createListItem(results[i].place_id, newPlaceToMark, i);
+                                                        createMarker(newPlaceToMark,i);
+                                                    }
+                                           TransitionToNewLocation(newCenter);
+                                        }
+                                  }
 
-              if (status === google.maps.places.PlacesServiceStatus.OK)
-                           {
-                                    console.log(results.length);
-                                    eraseMarkers();
-                                    clearList();
-                                    mapBounds=mapBoundsReset;
-                                    for (var i = 0; i < results.length; i++)
-                                            {
-                                                var newPlaceToMark={ title: results[i].name,
-                                                                    location: {lat: results[i].geometry.location.lat(),
-                                                                              lng: results[i].geometry.location.lng()}
-                                                                    };
-                                                // console.log(results[i]);
-                                                // console.log(results[i].place_id);
-                                                createListItem(results[i].place_id, newPlaceToMark, i);
-                                                createMarker(newPlaceToMark,results[i].place_id);
-                                            }
-                                TransitionToNewLocation(newCenter);
-                                }
-                          }
+
       }
 
       function TransitionToNewLocation(newCenter) {
+        console.log("new center translation");
               map.setCenter(newCenter);
               map.fitBounds(mapBounds);
               map.setZoom(12);
@@ -143,13 +149,14 @@ if (typeof google === 'undefined') alert("google api not loaded");
 
       function clearList()
       {
-          console.log("clear list called..");
+          // console.log("clear list called..");
           divSideNavPlaces.innerHTML="";
       }
 
-      function createListItem(placeID,newPlaceToMark,i)
+    function createListItem(placeID,newPlaceToMark,i)
           {
-
+            var param=i;
+              // console.log("creating div no:",i);
               var string;
               var service = new google.maps.places.PlacesService(map);
 
@@ -159,68 +166,88 @@ if (typeof google === 'undefined') alert("google api not loaded");
                            placeId: placeID
                           }, function(place, status) {
                            if (status === google.maps.places.PlacesServiceStatus.OK) {
-                                         string='<div><p class="placeName">'+ place.name+'</p>'+
-                                                  '<img id="' + placeID +'"'+ ' src='
-                                                   + place.photos[0].getUrl({'maxWidth': 80, 'maxHeight': 92})+'"> </div>';
+
+
+                                         string='<div class="placeNameAndImage" title="Click to highlight marker on map \nDoubleclick for detailed info" id="'+placeID+'"><p class="placeName">'+ place.name+'</p>'+
+                                                  '<img src='
+                                                   + place.photos[0].getUrl({'maxWidth': 80, 'maxHeight': 92})+'"> </div><hr>';
                                          divSideNavPlaces.innerHTML = divSideNavPlaces.innerHTML + string;
-                                         places_set.push(place);
-                                        //  console.log(place);
-                                        //  console.log(string);
-                                                          }
-                                                });
+                                         //e posibil sa nu existe poza - pt asta trebuie prinsa o eroare aici
+                                        places_set.push(place);
+                                        console.log(places_set.length);
+                                                              }
+                                    });
 
+        }
 
-             }
+        function addEventsListeners()
+        {
+          console.log('adding events listeners...');
+          console.log(places_set.length);
 
-             var listOfPlaces = document.querySelector("#places");
-             listOfPlaces.addEventListener("click", highlightPicture, false);
-             function highlightPicture(e) {
-                             if (e.target !== e.currentTarget) {
-                                         var clickedItem = e.target.id;
-                                         // alert("Hello " + clickedItem);
-                                         // console.log(e.target.id);
-                                         for (var i=0; i<markers_set.length;i++)
-                                          if (markers_set[i].id===e.target.id) {
-                                                                       console.log(markers_set[i].title);
-                                                                      //  console.log(markers_set[i]);
-                                                                       markers_set[i].icon=makeMarkerIcon('bf6c1c');
-                                                                      //from stackoverflow
-                                                                      //http://stackoverflow.com/questions/14657779/google-maps-bounce-animation-on-marker-for-a-limited-period
-                                                                      for (var x = 0; x < 5; x++)
-                                                                                {   markers_set[i].setAnimation(google.maps.Animation.BOUNCE);
-                                                                                    stopAnimation(markers_set[i]);
-                                                                                  };
-                                                                                  function stopAnimation(marker) {
-                                                                                      setTimeout(function () {
-                                                                                                      marker.setAnimation(null);
-                                                                                                    // marker.icon=makeMarkerIcon('0091ff');
-                                                                                                  }, 3000);
-                                                                                                };
-                                                                      // console.log(places_set[i].url);
-                                                                      window.open(places_set[i].url, "popupWindow", "width=363,height=630,scrollbars=yes");
+          for (var i=0;i<places_set.length;i++)
+          {
+            console.log(places_set[i].place_id);
 
-                                                                                             }
+            var place = document.getElementById(places_set[i].place_id);
+            place.addEventListener('click', (function(place) {
+              return function() {
+                // alert(place.name);
+                animateMarker(places_set.indexOf(place));
+
+              };
+            })(places_set[i]));
 
 
 
-                                         }
-                                         e.stopPropagation();
-                                   }
+            place.addEventListener('dblclick', (function(place) {
+              return function() {
+                popupCenter(place.url,place.name,800,550);
+                // window.open(place.url, "popupWindow", "width=650,height=350,scrollbars=yes");
+                        };
+            })(places_set[i]));
+          }
+
+        }
+
+        function popupCenter(url, title, w, h) {
+        var left = (screen.width/2)-(w/2);
+        var top = (screen.height/2)-(h/2);
+        return window.open(url, title, 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width='+w+', height='+h+', top='+top+', left='+left);
+        }
+
+
+
+
+        function animateMarker(i)
+        {
+          markers_set[i].icon=makeMarkerIcon('bf6c1c');
+          for (var j = 0; j < 5; j++)
+                      { markers_set[i].setAnimation(google.maps.Animation.BOUNCE);
+                        stopAnimation(markers_set[i]);
+                          };
+          function stopAnimation(marker) {
+                      setTimeout(function () { marker.setAnimation(null); }, 1500); };
+
+          setTimeout(function () {  markers_set[i].icon=makeMarkerIcon('0091ff'); }, 3000);
+        }
+
+
+
 
 
 
             function eraseMarkers()
             {
               //need to add erase palces set as well
-              console.log('#markers_length:', markers_set.length);
+              // console.log('#markers_length:', markers_set.length);
               var array_size=markers_set.length;
               var places_set_array_size=places_set.length;
 
               for (var i=0; i<markers_set.length; i++) markers_set[i].setMap(null);
               markers_set.splice(0,array_size);
               places_set.splice(0,places_set_array_size);
-
-              console.log('#markers_new length:', markers_set.length);
+              // console.log('#markers_new length:', markers_set.length);
             }
 
 
@@ -244,6 +271,7 @@ if (typeof google === 'undefined') alert("google api not loaded");
 
 
             function makeMarkerIcon(markerColor) {
+                // console.log("makeMarkerIcon called");
                 var markerImage = new google.maps.MarkerImage(
                 'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|'+ markerColor +
                 '|40|_|%E2%80%A2',

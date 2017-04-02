@@ -24,6 +24,13 @@ html, body, #main {
     margin-left: 0;
 }
 
+iframe {
+  width: 100%;
+  height: 100%;
+  align: right;
+  margin-left: 200px;
+}
+
 #start_btn
 {
   position: absolute;
@@ -108,9 +115,21 @@ input, select, button {
 .placeName
 {
   font-size: 12px;
+  font-family: Arial, sans-serif;
+  /*font-family: Rockwell, sans-serif;*/
+
 }
 
+.placeNameAndImage:hover {
+    /*background-color: black;*/
+    background: rgba(0,0,0, 0.9);
+    
+}
 
+hr, .placeName {
+  margin-top: 2px;
+  margin-bottom: 2px;
+}
 
 /* On smaller screens less padding, smaller fonts size) */
 @media screen and (max-width: 700px) {
