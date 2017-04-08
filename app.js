@@ -106,6 +106,7 @@ if (typeof google === 'undefined') alert("google api not loaded");
       function findPlacesNearNewCenter(newCenter,typeOfPlaceSelected,rangeValue) {
 
         var service = new google.maps.places.PlacesService(map);
+        //nearbysearch will return a list of 20 places by default
         service.nearbySearch({
                                 location: newCenter,
                                 radius: rangeValue,
@@ -187,30 +188,46 @@ if (typeof google === 'undefined') alert("google api not loaded");
 
           for (var i=0;i<places_set.length;i++)
           {
-            console.log(places_set[i].place_id);
+                  console.log(places_set[i].place_id);
 
-            var place = document.getElementById(places_set[i].place_id);
-            place.addEventListener('click', (function(place) {
-              return function() {
-                // alert(place.name);
-                animateMarker(places_set.indexOf(place));
+                  var place = document.getElementById(places_set[i].place_id);
+                  place.addEventListener('click', (function(place) {
+                    return function() {
+                      // alert(place.name);
+                      animateMarker(places_set.indexOf(place));
 
-              };
-            })(places_set[i]));
+                    };
+                  })(places_set[i]));
 
 
 
-            place.addEventListener('dblclick', (function(place) {
-              return function() {
-                popupCenter(place.url,place.name,800,550);
-                // window.open(place.url, "popupWindow", "width=650,height=350,scrollbars=yes");
-                        };
-            })(places_set[i]));
+                  place.addEventListener('dblclick', (function(place) {
+                    return function() {
+                      popupCenter(place.url,place.name,800,550);
+                      // window.open(place.url, "popupWindow", "width=650,height=350,scrollbars=yes");
+                              };
+                  })(places_set[i]));
+
+                  place.addEventListener('mouseover', (function(index) {
+                    return function() {
+                       google.maps.event.trigger(markers_set[index], 'mouseover');
+                      // window.open(place.url, "popupWindow", "width=650,height=350,scrollbars=yes");
+                              };
+                  })(i));
+
+
+                  place.addEventListener('mouseout', (function(index) {
+                    return function() {
+                       google.maps.event.trigger(markers_set[index], 'mouseout');
+                      // window.open(place.url, "popupWindow", "width=650,height=350,scrollbars=yes");
+                              };
+                  })(i));
           }
 
         }
 
         function popupCenter(url, title, w, h) {
+        //trebuie definita o ferestra globala si lucrat doar cu ea pt ca altfel deschide o noua feresatra cu fiecare click
         var left = (screen.width/2)-(w/2);
         var top = (screen.height/2)-(h/2);
         return window.open(url, title, 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width='+w+', height='+h+', top='+top+', left='+left);
@@ -229,7 +246,7 @@ if (typeof google === 'undefined') alert("google api not loaded");
           function stopAnimation(marker) {
                       setTimeout(function () { marker.setAnimation(null); }, 1500); };
 
-          setTimeout(function () {  markers_set[i].icon=makeMarkerIcon('0091ff'); }, 3000);
+          setTimeout(function () {  markers_set[i].setIcon(makeMarkerIcon('0091ff')); }, 3000);
         }
 
 
@@ -265,13 +282,23 @@ if (typeof google === 'undefined') alert("google api not loaded");
                 mapBounds.extend(marker.position);
                 // map.fitBounds(mapBounds);
                 google.maps.event.addListener(marker, 'click', function() {
+                this.setIcon(makeMarkerIcon('f27b1f'));
                 populateInfoWindow(this, infowindow);
               });
+
+              google.maps.event.addListener(marker, 'mouseover', function() {
+              this.setIcon(makeMarkerIcon('f27b1f'));
+            });
+
+            google.maps.event.addListener(marker, 'mouseout', function() {
+            this.setIcon(makeMarkerIcon('0091ff'));
+          });
+
             }
 
 
             function makeMarkerIcon(markerColor) {
-                // console.log("makeMarkerIcon called");
+                console.log("makeMarkerIcon called");
                 var markerImage = new google.maps.MarkerImage(
                 'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|'+ markerColor +
                 '|40|_|%E2%80%A2',
@@ -283,6 +310,7 @@ if (typeof google === 'undefined') alert("google api not loaded");
               };
             function populateInfoWindow(marker, infowindow) {
                       // Check to make sure the infowindow is not already opened on this marker.
+
                       if (infowindow.marker != marker) {
                         infowindow.marker = marker;
                         infowindow.setContent('');
@@ -290,6 +318,7 @@ if (typeof google === 'undefined') alert("google api not loaded");
                         // Make sure the marker property is cleared if the infowindow is closed.
                         infowindow.addListener('closeclick', function() {
                           infowindow.marker = null;
+                          marker.setIcon(makeMarkerIcon('0091ff'));
                         });
                         var streetViewService = new google.maps.StreetViewService();
                         var radius = 50;

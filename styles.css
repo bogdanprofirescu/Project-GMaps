@@ -123,7 +123,7 @@ input, select, button {
 .placeNameAndImage:hover {
     /*background-color: black;*/
     background: rgba(0,0,0, 0.9);
-    
+
 }
 
 hr, .placeName {
