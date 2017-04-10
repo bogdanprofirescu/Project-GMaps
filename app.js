@@ -42,6 +42,7 @@ var events_set=[];
 
 
 var infowindow;
+var detailedInfoWindow;
 var newCenter;
 var destination=document.getElementById("areaChoice");
 var typeOfPlaceSelected=document.getElementById("typeOfPlace");
@@ -104,7 +105,7 @@ if (typeof google === 'undefined') alert("google api not loaded");
       }
 
       function findPlacesNearNewCenter(newCenter,typeOfPlaceSelected,rangeValue) {
-
+        console.log("variabla newCenter:",newCenter);
         var service = new google.maps.places.PlacesService(map);
         //nearbysearch will return a list of 20 places by default
         service.nearbySearch({
@@ -193,9 +194,9 @@ if (typeof google === 'undefined') alert("google api not loaded");
                   var place = document.getElementById(places_set[i].place_id);
                   place.addEventListener('click', (function(place) {
                     return function() {
-                      // alert(place.name);
-                      animateMarker(places_set.indexOf(place));
 
+                      TransitionToNewLocation(places_set[places_set.indexOf(place)].geometry.location);
+                      animateMarker(places_set.indexOf(place));
                     };
                   })(places_set[i]));
 
@@ -203,13 +204,17 @@ if (typeof google === 'undefined') alert("google api not loaded");
 
                   place.addEventListener('dblclick', (function(place) {
                     return function() {
-                      popupCenter(place.url,place.name,800,550);
-                      // window.open(place.url, "popupWindow", "width=650,height=350,scrollbars=yes");
+                            TransitionToNewLocation(places_set[places_set.indexOf(place)].geometry.location);
+                            infowindow.close();
+                            if (detailedInfoWindow!=undefined) detailedInfoWindow.close();
+                            detailedInfoWindow=popupCenter(place.url,place.name,800,550);
+                            
                               };
                   })(places_set[i]));
 
                   place.addEventListener('mouseover', (function(index) {
                     return function() {
+                        // TransitionToNewLocation(places_set[places_set.indexOf(place)].geometry.location);
                        google.maps.event.trigger(markers_set[index], 'mouseover');
                       // window.open(place.url, "popupWindow", "width=650,height=350,scrollbars=yes");
                               };
@@ -228,9 +233,12 @@ if (typeof google === 'undefined') alert("google api not loaded");
 
         function popupCenter(url, title, w, h) {
         //trebuie definita o ferestra globala si lucrat doar cu ea pt ca altfel deschide o noua feresatra cu fiecare click
+        // detailedInfoWindow.close();
         var left = (screen.width/2)-(w/2);
         var top = (screen.height/2)-(h/2);
-        return window.open(url, title, 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width='+w+', height='+h+', top='+top+', left='+left);
+        // window.close();
+      return window.open(url, title, 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width='+w+', height='+h+', top='+top+', left='+left);
+
         }
 
 
@@ -310,7 +318,7 @@ if (typeof google === 'undefined') alert("google api not loaded");
               };
             function populateInfoWindow(marker, infowindow) {
                       // Check to make sure the infowindow is not already opened on this marker.
-
+                      TransitionToNewLocation(marker.internalPosition);
                       if (infowindow.marker != marker) {
                         infowindow.marker = marker;
                         infowindow.setContent('');
