@@ -38,7 +38,7 @@ function closeMenu() {
 var map;
 var markers_set=[];
 var places_set=[];
-var events_set=[];
+// var events_set=[];
 
 
 var infowindow;
@@ -135,8 +135,6 @@ if (typeof google === 'undefined') alert("google api not loaded");
                                            TransitionToNewLocation(newCenter);
                                         }
                                   }
-
-
       }
 
       function TransitionToNewLocation(newCenter) {
@@ -195,7 +193,9 @@ if (typeof google === 'undefined') alert("google api not loaded");
                   place.addEventListener('click', (function(place) {
                     return function() {
 
-                      TransitionToNewLocation(places_set[places_set.indexOf(place)].geometry.location);
+                      // http://stackoverflow.com/questions/6100514/google-maps-v3-check-if-marker-is-present-on-map
+                      if (map.getBounds().contains(places_set[places_set.indexOf(place)].geometry.location)==false)
+                                                                    map.panTo(places_set[places_set.indexOf(place)].geometry.location);
                       animateMarker(places_set.indexOf(place));
                     };
                   })(places_set[i]));
@@ -204,11 +204,12 @@ if (typeof google === 'undefined') alert("google api not loaded");
 
                   place.addEventListener('dblclick', (function(place) {
                     return function() {
-                            TransitionToNewLocation(places_set[places_set.indexOf(place)].geometry.location);
-                            infowindow.close();
-                            if (detailedInfoWindow!=undefined) detailedInfoWindow.close();
+                      if (map.getBounds().contains(places_set[places_set.indexOf(place)].geometry.location)==false)
+                                                                    map.panTo(places_set[places_set.indexOf(place)].geometry.location);
+                          infowindow.close();
+                          if (detailedInfoWindow!=undefined) detailedInfoWindow.close();
                             detailedInfoWindow=popupCenter(place.url,place.name,800,550);
-                            
+
                               };
                   })(places_set[i]));
 
@@ -224,21 +225,18 @@ if (typeof google === 'undefined') alert("google api not loaded");
                   place.addEventListener('mouseout', (function(index) {
                     return function() {
                        google.maps.event.trigger(markers_set[index], 'mouseout');
-                      // window.open(place.url, "popupWindow", "width=650,height=350,scrollbars=yes");
-                              };
+                          };
                   })(i));
           }
 
         }
 
         function popupCenter(url, title, w, h) {
-        //trebuie definita o ferestra globala si lucrat doar cu ea pt ca altfel deschide o noua feresatra cu fiecare click
-        // detailedInfoWindow.close();
+        //trebuie pus un modal
         var left = (screen.width/2)-(w/2);
         var top = (screen.height/2)-(h/2);
         // window.close();
       return window.open(url, title, 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width='+w+', height='+h+', top='+top+', left='+left);
-
         }
 
 
@@ -246,7 +244,7 @@ if (typeof google === 'undefined') alert("google api not loaded");
 
         function animateMarker(i)
         {
-          markers_set[i].icon=makeMarkerIcon('bf6c1c');
+          markers_set[i].icon=makeMarkerIcon('f27b1f');
           for (var j = 0; j < 5; j++)
                       { markers_set[i].setAnimation(google.maps.Animation.BOUNCE);
                         stopAnimation(markers_set[i]);
@@ -254,12 +252,8 @@ if (typeof google === 'undefined') alert("google api not loaded");
           function stopAnimation(marker) {
                       setTimeout(function () { marker.setAnimation(null); }, 1500); };
 
-          setTimeout(function () {  markers_set[i].setIcon(makeMarkerIcon('0091ff')); }, 3000);
+          setTimeout(function () {  markers_set[i].setIcon(makeMarkerIcon('0091ff')); }, 6000);
         }
-
-
-
-
 
 
             function eraseMarkers()
@@ -286,6 +280,7 @@ if (typeof google === 'undefined') alert("google api not loaded");
                 id: i,
                 position: {lat: place.location.lat, lng: place.location.lng }
               });
+
                 markers_set.push(marker);//add markers to the set
                 mapBounds.extend(marker.position);
                 // map.fitBounds(mapBounds);
@@ -306,7 +301,7 @@ if (typeof google === 'undefined') alert("google api not loaded");
 
 
             function makeMarkerIcon(markerColor) {
-                console.log("makeMarkerIcon called");
+                // console.log("makeMarkerIcon called");
                 var markerImage = new google.maps.MarkerImage(
                 'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|'+ markerColor +
                 '|40|_|%E2%80%A2',
