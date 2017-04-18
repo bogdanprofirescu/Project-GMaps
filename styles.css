@@ -125,7 +125,7 @@ input, select, button {
 
 .placeNameAndImage:hover {
     /*background-color: black;*/
-    /*background: rgba(0,0,0, 0.9);*/
+    /*background: rgba(255,255,255, 0.9);*/
     background: rgba(242,123,31,0.7);
 }
 

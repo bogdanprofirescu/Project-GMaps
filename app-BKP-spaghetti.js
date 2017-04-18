@@ -1,39 +1,53 @@
+// adding two event listeners for opening and closing the menu
+document.getElementById("start_btn").addEventListener('click',openMenu,false);
+document.getElementById("close_btn").addEventListener('click',closeMenu,false);
 
-function viewModel()
-{
+//this function is a candidate for knockout.js
+window.onload= function() {
+document.getElementById("searchBttn").addEventListener('click', findNewCenter);
+};
 
-// var divSideNavPlaces = document.getElementById('places');
+
+//adding few bindings so that changes can be done
+// without repeated bindings in event handlers functions
+var navigationBar=document.getElementById("navigationBar");
+var main=document.getElementById("main");
+var start_btn_background=document.getElementById("start_btn_background");
+var sidenav_items=document.getElementsByClassName("sidenav")[0];
+var divSideNavPlaces = document.getElementById('places');
+var globalTempMarker;
+//open and close menu functions change the sidebar width & hide/show
+// the main menu button
+function openMenu() {
+  sidenav_items.style.display="none";
+  start_btn_background.style.display="none";
+  // if (window.innerWidth<700) navigationBar.style.width = "160px";
+  //     else navigationBar.style.width = "235px";
+  navigationBar.style.width = "160px";
+  sidenav_items.style.display="";
+  navigationBar.style.padding= "10px";
+  }
+
+function closeMenu() {
+    start_btn_background.style.display="block";
+  // sidenav_items.style.display="none";
+    navigationBar.style.width = "0";
+    navigationBar.style.padding= "0";
+}
+
 var map;
-var self = this;
+var markers_set=[];
+var places_set=[];
+// var events_set=[];
 
-self.markers_set=ko.observableArray();
-self.places_set=ko.observableArray();
 
-self.destination=ko.observable('Brasov');
-self.typeOfPlaceSelected=ko.observable();
-
-var infowindow, detailedInfoWindow, newCenter;
-
-// var typeOfPlaceSelected=document.getElementById("typeOfPlace");
+var infowindow;
+var detailedInfoWindow;
+var newCenter;
+var destination=document.getElementById("areaChoice");
+var typeOfPlaceSelected=document.getElementById("typeOfPlace");
 var range=document.getElementById("range");
 var mapBounds;
-
-var navigationBar=document.getElementById("navigationBar");
-var start_btn_background=document.getElementById("start_btn_background");
-
-//open and close menu functions hide/show the side-menu
-openMenu=function() {
-  start_btn_background.style.display="none";
-  navigationBar.style.width = "160px";
-  navigationBar.style.display="";
-  navigationBar.style.padding= "10px";
-}
-
-closeMenu=function() {
-  start_btn_background.style.display="block";
-  navigationBar.style.width = "0";
-  navigationBar.style.padding= "0";
-}
 
 function initMap()
 {
@@ -45,7 +59,7 @@ if (typeof google === 'undefined') alert("google api not loaded");
 
   map = new google.maps.Map(document.getElementById('map'), {
     // center: {lat: 45.642024, lng: 25.589116},
-    zoom: 14,
+    zoom: 12,
       mapTypeControlOptions: {
               style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
               position: google.maps.ControlPosition.TOP_CENTER
@@ -65,38 +79,50 @@ if (typeof google === 'undefined') alert("google api not loaded");
   findNewCenter();
   };
 
-  findNewCenter=function()
-  {
-    eraseMarkers();
-    var geocoder = new google.maps.Geocoder();
-    geocoder.geocode(
-      { address: self.destination()},
-      function(results, status) {
-        if (status == google.maps.GeocoderStatus.OK) setTimeout (findPlacesNearNewCenter(results[0].geometry.location, self.typeOfPlaceSelected(),range.value),2500)
-                else
-                  window.alert('We could not find that location, check for typos or enter another location.');
-      });
-    }
 
 
-  function findPlacesNearNewCenter(newCenter, typeOfPlace, rangeValue) {
-                var service = new google.maps.places.PlacesService(map);
+
+  function findNewCenter()
+      {
+        var geocoder = new google.maps.Geocoder();
+        geocoder.geocode(
+          { address: destination.value},
+           function(results, status) {
+            if (status == google.maps.GeocoderStatus.OK) {
+                     {
+                      //  map.setCenter(results[0].geometry.location);
+                       findPlacesNearNewCenter(results[0].geometry.location, typeOfPlaceSelected.value,range.value);
+                            };
+            }
+                   else {
+                    window.alert('We could not find that location - try entering a more' +
+                        ' specific place.');
+                  }
+          });
+
+          setTimeout(addEventsListeners,2500);
+
+      }
+
+      function findPlacesNearNewCenter(newCenter,typeOfPlaceSelected,rangeValue) {
+        console.log("variabla newCenter:",newCenter);
+        var service = new google.maps.places.PlacesService(map);
         //nearbysearch will return a list of 20 places by default
         service.nearbySearch({
                                 location: newCenter,
                                 radius: rangeValue,
-                                keyword: typeOfPlace,
+                                keyword: typeOfPlaceSelected,
                                 type: 'establishment'
                               }, callback);
 
               function callback(results, status) {
                       if (status === google.maps.places.PlacesServiceStatus.OK)
                                    {
-                                           mapBounds=mapBoundsReset;
-                                            var maxPlaces;
-                                            if (results.length>10) maxPlaces=10
-                                                        else maxPlaces=results.length;
-                                            for (var i = 0; i < maxPlaces; i++)
+                                            // console.log(results.length);
+                                            eraseMarkers();
+                                            clearList();
+                                            mapBounds=mapBoundsReset;
+                                            for (var i = 0; i < results.length; i++)
                                                     {
                                                         var newPlaceToMark={ title: results[i].name,
                                                                             location: {lat: results[i].geometry.location.lat(),
@@ -104,37 +130,35 @@ if (typeof google === 'undefined') alert("google api not loaded");
                                                                             };
                                                         // console.log("ask to create place no:",i);
                                                         createListItem(results[i].place_id, newPlaceToMark, i);
-
+                                                        createMarker(newPlaceToMark,i);
                                                     }
                                            TransitionToNewLocation(newCenter);
                                         }
-                                else {
-                                  if (results.length==0) {
-                                    alert("Sorry, no place identified. Try to modify range and/or city");
-                                    // TREBUIE UN MODAL AICI
-                                  }
-                                  console.log("#places identified:",results.length);
-                                      }
                                   }
       }
 
       function TransitionToNewLocation(newCenter) {
-        // console.log("new center translation");
+        console.log("new center translation");
               map.setCenter(newCenter);
               map.fitBounds(mapBounds);
-              map.setZoom(10);
+              map.setZoom(12);
               map.panTo(newCenter);
-              map.fitBounds(mapBounds);
               // only in this succesion I manage to center the map at the right zoom
               // console.log("zoom after new center:", map.getZoom());
       }
 
+      function clearList()
+      {
+          // console.log("clear list called..");
+          divSideNavPlaces.innerHTML="";
+      }
 
     function createListItem(placeID,newPlaceToMark,i)
-    {
-            // var param=i;
-            var string;
-            var service = new google.maps.places.PlacesService(map);
+          {
+            var param=i;
+              // console.log("creating div no:",i);
+              var string;
+              var service = new google.maps.places.PlacesService(map);
 
               // https://developers.google.com/maps/documentation/javascript/examples/place-details
 
@@ -142,69 +166,70 @@ if (typeof google === 'undefined') alert("google api not loaded");
                            placeId: placeID
                           }, function(place, status) {
                            if (status === google.maps.places.PlacesServiceStatus.OK) {
-                                      var temp=place;
-                                      try {
-                                            // place.photos[0].getUrl({'maxWidth': 80, 'maxHeight': 92});
-                                            temp.srcURL=place.photos[0].getUrl({'maxWidth': 80, 'maxHeight': 92});
-                                    }
-                                    catch (e) {
-                                      console.log('no picture for:', place.name);
-                                      temp.srcURL='placeholder.png';
-                                    }
-                                      self.places_set.push(temp);
-                                      createMarker(newPlaceToMark,i);
 
-                                      // console.log(place);
+
+                                         string='<div class="placeNameAndImage" title="Click to highlight marker on map \nDoubleclick for detailed info" id="'+placeID+'"><p class="placeName">'+ place.name+'</p>'+
+                                                  '<img src='
+                                                   + place.photos[0].getUrl({'maxWidth': 80, 'maxHeight': 92})+'"> </div><hr>';
+                                         divSideNavPlaces.innerHTML = divSideNavPlaces.innerHTML + string;
+                                         //e posibil sa nu existe poza - pt asta trebuie prinsa o eroare aici
+                                        places_set.push(place);
+                                        console.log(places_set.length);
                                                               }
-
-                                                              else {
-                                                                console.log(status);
-                                                              }
-
                                     });
 
-    }
+        }
 
-// how to identify the index of an obect in an array dependin on its property value
-// http://stackoverflow.com/questions/8668174/indexof-method-in-an-object-array
+        function addEventsListeners()
+        {
+          console.log('adding events listeners...');
+          console.log(places_set.length);
 
-  highlightMarker=function() {
-          var object_id=this.id;
-          var index=self.places_set().map(function(e) { return e.id; }).indexOf(object_id);
-          // console.log("highlight marker");
-          google.maps.event.trigger(self.markers_set()[index], 'mouseover');
+          for (var i=0;i<places_set.length;i++)
+          {
+                  console.log(places_set[i].place_id);
 
-        };
+                  var place = document.getElementById(places_set[i].place_id);
+                  place.addEventListener('click', (function(place) {
+                    return function() {
 
-  unHighlightMarker=function() {
-                var object_id=this.id;
-                var index=self.places_set().map(function(e) { return e.id; }).indexOf(object_id);
-                // console.log("UN_highlight marker");
-                google.maps.event.trigger(self.markers_set()[index], 'mouseout');
-              };
+                      // http://stackoverflow.com/questions/6100514/google-maps-v3-check-if-marker-is-present-on-map
+                      if (map.getBounds().contains(places_set[places_set.indexOf(place)].geometry.location)==false)
+                                                                    map.panTo(places_set[places_set.indexOf(place)].geometry.location);
+                      animateMarker(places_set.indexOf(place));
+                    };
+                  })(places_set[i]));
 
-clickSideImage=function() {
-              var object_id=this.id;
-              var index=self.places_set().map(function(e) { return e.id; }).indexOf(object_id);
-              var marker_location=self.places_set()[index].geometry.location;
-              // console.log(marker_location);
-              // http://stackoverflow.com/questions/6100514/google-maps-v3-check-if-marker-is-present-on-map
-              if (map.getBounds().contains(marker_location)==false) map.panTo(marker_location);
-              animateMarker(index);
-              // console.log("clickSideImage");
-}
 
-dblclickSideImage=function(){
-  var object_id=this.id;
-  var index=self.places_set().map(function(e) { return e.id; }).indexOf(object_id);
-  var marker_location=self.places_set()[index].geometry.location;
-  // http://stackoverflow.com/questions/6100514/google-maps-v3-check-if-marker-is-present-on-map
-  if (map.getBounds().contains(marker_location)==false) map.panTo(marker_location);
-  infowindow.close();
-  // console.log("dblclickSideImage");
-  if (detailedInfoWindow!=undefined) detailedInfoWindow.close();
-    detailedInfoWindow=popupCenter(this.url,this.name,800,550);
-}
+
+                  place.addEventListener('dblclick', (function(place) {
+                    return function() {
+                      if (map.getBounds().contains(places_set[places_set.indexOf(place)].geometry.location)==false)
+                                                                    map.panTo(places_set[places_set.indexOf(place)].geometry.location);
+                          infowindow.close();
+                          if (detailedInfoWindow!=undefined) detailedInfoWindow.close();
+                            detailedInfoWindow=popupCenter(place.url,place.name,800,550);
+
+                              };
+                  })(places_set[i]));
+
+                  place.addEventListener('mouseover', (function(index) {
+                    return function() {
+                        // TransitionToNewLocation(places_set[places_set.indexOf(place)].geometry.location);
+                       google.maps.event.trigger(markers_set[index], 'mouseover');
+                      // window.open(place.url, "popupWindow", "width=650,height=350,scrollbars=yes");
+                              };
+                  })(i));
+
+
+                  place.addEventListener('mouseout', (function(index) {
+                    return function() {
+                       google.maps.event.trigger(markers_set[index], 'mouseout');
+                          };
+                  })(i));
+          }
+
+        }
 
         function popupCenter(url, title, w, h) {
         //trebuie pus un modal
@@ -219,33 +244,29 @@ dblclickSideImage=function(){
 
         function animateMarker(i)
         {
-          self.markers_set()[i].icon=makeMarkerIcon('f27b1f');
+          markers_set[i].icon=makeMarkerIcon('f27b1f');
           for (var j = 0; j < 5; j++)
-                      { self.markers_set()[i].setAnimation(google.maps.Animation.BOUNCE);
-                        stopAnimation(self.markers_set()[i]);
+                      { markers_set[i].setAnimation(google.maps.Animation.BOUNCE);
+                        stopAnimation(markers_set[i]);
                           };
           function stopAnimation(marker) {
                       setTimeout(function () { marker.setAnimation(null); }, 1500); };
 
-                      setTimeout(function () {  self.markers_set()[i].setIcon(makeMarkerIcon('0091ff'));}, 6000);
+          setTimeout(function () {  markers_set[i].setIcon(makeMarkerIcon('0091ff')); }, 6000);
         }
 
 
             function eraseMarkers()
             {
+              //need to add erase palces set as well
+              // console.log('#markers_length:', markers_set.length);
+              var array_size=markers_set.length;
+              var places_set_array_size=places_set.length;
 
-              //
-              for (var i=0; i<self.markers_set().length; i++) self.markers_set()[i].setMap(null);
-              // self.markers_set().splice(0,array_size);
-              // self.places_set().splice(0,places_set_array_size);
-
-                  self.markers_set.removeAll();
-                  // console.log("self.markers_set, after removeAll:", self.markers_set);
-                  // self.markers_set=ko.observableArray();
-
-                  self.places_set.removeAll();
-                  // self.places_set=ko.observableArray();
-
+              for (var i=0; i<markers_set.length; i++) markers_set[i].setMap(null);
+              markers_set.splice(0,array_size);
+              places_set.splice(0,places_set_array_size);
+              // console.log('#markers_new length:', markers_set.length);
             }
 
 
@@ -260,9 +281,9 @@ dblclickSideImage=function(){
                 position: {lat: place.location.lat, lng: place.location.lng }
               });
 
-                self.markers_set.push(marker);//add markers to the set
+                markers_set.push(marker);//add markers to the set
                 mapBounds.extend(marker.position);
-                map.fitBounds(mapBounds);
+                // map.fitBounds(mapBounds);
                 google.maps.event.addListener(marker, 'click', function() {
                 this.setIcon(makeMarkerIcon('f27b1f'));
                 populateInfoWindow(this, infowindow);
@@ -291,8 +312,8 @@ dblclickSideImage=function(){
                 return markerImage;
               };
             function populateInfoWindow(marker, infowindow) {
-                      TransitionToNewLocation(marker.internalPosition);
                       // Check to make sure the infowindow is not already opened on this marker.
+                      TransitionToNewLocation(marker.internalPosition);
                       if (infowindow.marker != marker) {
                         infowindow.marker = marker;
                         infowindow.setContent('');
@@ -333,7 +354,3 @@ dblclickSideImage=function(){
                     infowindow.open(map, marker);
                       }
                     }
-initMap();
-    }
-
-ko.applyBindings(new viewModel());

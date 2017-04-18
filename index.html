@@ -4,11 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <title>Brasov map</title>
+    <title>Places to visit</title>
     <!--TODO: add Brasov city logo as favicon-->
     <link rel="stylesheet" href="styles.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous"> -->
+    <script src="https://maps.googleapis.com/maps/api/js?libraries=places,geometry,drawing&key=AIzaSyARDaZozs7u65RbsBI4Xjwx7jJJ87iUAjY&v=3">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.2/knockout-min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+    <!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script> -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
   </head>
 
     <body>
@@ -16,28 +23,30 @@
        <div id="main">
         <div id="map"></div>
             <div id="start_btn_background">
-            <p id="start_btn"><strong>&#9776; menu</strong></p>
+            <p id="start_btn" data-bind="event: {click: openMenu}"><strong>&#9776; menu</strong></p>
             <br>
         </div>
       </div>
        <div id="navigationBar" class="sidenav">
-         <a href="javascript:void(0)" id="close_btn"><strong>&times;</strong></a>
+         <a href="javascript:void(0)" id="close_btn" data-bind="event: {click: closeMenu}"><strong>&times;</strong></a>
          <br>
           <div id="navigation_items" class="form-group">
             <p id="instructions">Type a city name and choose place to see proeminent attractions anywhere in the world!<p>
             <p class="label">Enter a city:
-            <input id="areaChoice"  type="text" placeholder="enter city" value="Brasov">
+            <!-- <input id="areaChoice"  type="text" placeholder="enter city" value="Brasov"> -->
+            <input id="areaChoice" placeholder="enter city" value="Brasov" type="text" data-bind="value: destination">
+<!-- type="text" data-bind="value: firstName" -->
             </p>
-            <p class="label">Range from city center(meters):
+            <p class="label">Range from city center:
             <input id="range"  type="text" placeholder="max 50000 meters" value="10000">
             </p>
             <p class="label">Choose a type of place:
               <!-- <input id="typeOfPlace"  type="text" placeholder="places to visit in.." value="places to visit"> -->
-            <select id="typeOfPlace"  value="">
+            <select id="typeOfPlace"  data-bind="value: typeOfPlaceSelected">
               <option value="art gallery">art gallery</option>
               <option value="bar">bar</option>
               <option value="church">church</option>
-              <option value="castle">castle</option>
+              <option value="palace castle">castle</option>
               <option value="lodging">lodging</option>
               <option value="museum" selected="">museum</option>
               <option value="park">park</option>
@@ -48,24 +57,22 @@
               <option value="zoo">zoo</option>
             </select>
           </p>
-          <button type="button"  id="searchBttn" class="label" >Start search</button>
+          <button type="button"  id="searchBttn" class="label" data-bind="event: {click: findNewCenter}">Search</button>
 
         </div>
         <hr>
-        <div id="places">
-
+        <div id="places" data-bind="foreach: places_set">
+          <div class="placeNameAndImage"  data-toggle="tooltip" title="Click to highlight marker &#013;Doublclick for more details" data-placement="left" data-bind="event: {mouseover: highlightMarker, mouseout: unHighlightMarker, click: clickSideImage, dblclick: dblclickSideImage}">
+            <p class="placeName" data-bind="text: name, attr:{id:id}"></p>
+            <img data-bind="attr:{src: srcURL}" height="50" width="62">
+        </div>
         </div>
         <hr>
       </div>
-
-      <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
-      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
-        <script src= "app.js"> </script>
-        <script async defer src=
+      <script src= "app.js"> </script>
+        <!-- <script async defer src=
         "https://maps.googleapis.com/maps/api/js?libraries=places,geometry,drawing&key=AIzaSyARDaZozs7u65RbsBI4Xjwx7jJJ87iUAjY&v=3&callback=initMap">
-        </script>
-
+        </script> -->
 
   </body>
 </html>
