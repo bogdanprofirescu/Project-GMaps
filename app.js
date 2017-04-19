@@ -8,14 +8,14 @@ var self = this;
 
 self.markers_set=ko.observableArray();
 self.places_set=ko.observableArray();
+self.filtered_places_set=ko.observableArray();
 
 self.destination=ko.observable('Brasov');
 self.typeOfPlaceSelected=ko.observable();
+self.range=ko.observable(5000);
+self.filterSelected=ko.observable('all');
 
 var infowindow, detailedInfoWindow, newCenter;
-
-// var typeOfPlaceSelected=document.getElementById("typeOfPlace");
-var range=document.getElementById("range");
 var mapBounds;
 
 var navigationBar=document.getElementById("navigationBar");
@@ -72,7 +72,7 @@ if (typeof google === 'undefined') alert("google api not loaded");
     geocoder.geocode(
       { address: self.destination()},
       function(results, status) {
-        if (status == google.maps.GeocoderStatus.OK) setTimeout (findPlacesNearNewCenter(results[0].geometry.location, self.typeOfPlaceSelected(),range.value),2500)
+        if (status == google.maps.GeocoderStatus.OK) setTimeout (findPlacesNearNewCenter(results[0].geometry.location, self.typeOfPlaceSelected(),self.range()),2500)
                 else
                   window.alert('We could not find that location, check for typos or enter another location.');
       });
@@ -81,7 +81,7 @@ if (typeof google === 'undefined') alert("google api not loaded");
 
   function findPlacesNearNewCenter(newCenter, typeOfPlace, rangeValue) {
                 var service = new google.maps.places.PlacesService(map);
-        //nearbysearch will return a list of 20 places by default
+        //nearbysearch will return a list of up to 20 places by default
         service.nearbySearch({
                                 location: newCenter,
                                 radius: rangeValue,
@@ -122,9 +122,9 @@ if (typeof google === 'undefined') alert("google api not loaded");
         // console.log("new center translation");
               map.setCenter(newCenter);
               map.fitBounds(mapBounds);
-              map.setZoom(10);
+              map.setZoom(12);
               map.panTo(newCenter);
-              map.fitBounds(mapBounds);
+              // map.fitBounds(mapBounds);
               // only in this succesion I manage to center the map at the right zoom
               // console.log("zoom after new center:", map.getZoom());
       }
@@ -146,26 +146,118 @@ if (typeof google === 'undefined') alert("google api not loaded");
                                       try {
                                             // place.photos[0].getUrl({'maxWidth': 80, 'maxHeight': 92});
                                             temp.srcURL=place.photos[0].getUrl({'maxWidth': 80, 'maxHeight': 92});
+                                            // console.log(place);
                                     }
                                     catch (e) {
                                       console.log('no picture for:', place.name);
+                                      // console.log(place);
                                       temp.srcURL='placeholder.png';
                                     }
+
+                                    if (place.hasOwnProperty('rating'))
+                                                                      {
+                                                                        //  console.log(place.rating);
+                                                                        temp.ratingFigure=temp.rating;
+                                                                        temp.ratingStars=createRatingForPlace(place);
+                                                                      }
+                                              else {
+                                                        // console.log(place.name," has no rating property");
+                                                        temp.ratingStars ='not';
+                                                        temp.ratingFigure ='rated yet';
+                                                      }
+
+
                                       self.places_set.push(temp);
+                                      self.filtered_places_set.push(temp);
                                       createMarker(newPlaceToMark,i);
-
-                                      // console.log(place);
                                                               }
-
                                                               else {
                                                                 console.log(status);
                                                               }
 
                                     });
 
+
     }
 
-// how to identify the index of an obect in an array dependin on its property value
+function createRatingForPlace(placeToRate)
+{
+  var ratingString;
+  //"&#9733;" - black star , "&#9734;" - white star
+  switch(true) {
+    case ((Math.round(placeToRate.rating)==1)&&(placeToRate.rating<1.25)): ratingString="&#9733;"; break;
+    case ((Math.round(placeToRate.rating)==1)&&(placeToRate.rating>1.25)): ratingString="&#9733;"+"&#9734;"; break;
+
+    case ((Math.round(placeToRate.rating)==2)&&(placeToRate.rating<2.25)): ratingString="&#9733;"+"&#9733;"; break;
+    case ((Math.round(placeToRate.rating)==2)&&(placeToRate.rating>2.25)): ratingString="&#9733;"+"&#9733;"+"&#9734;"; break;
+
+    case ((Math.round(placeToRate.rating)==3)&&(placeToRate.rating<3.25)): ratingString="&#9733;"+"&#9733;"+"&#9733;"; break;
+    case ((Math.round(placeToRate.rating)==3)&&(placeToRate.rating>3.25)): ratingString="&#9733;"+"&#9733;"+"&#9733;"+"&#9734;"; break;
+
+    case ((Math.round(placeToRate.rating)==4)&&(placeToRate.rating<4.25)): ratingString="&#9733;"+"&#9733;"+"&#9733;"+"&#9733;"; break;
+    case ((Math.round(placeToRate.rating)==4)&&(placeToRate.rating>4.25)): ratingString="&#9733;"+"&#9733;"+"&#9733;"+"&#9733;"+"&#9734;";  break;
+
+    case ((Math.round(placeToRate.rating)==5)&&(placeToRate.rating<4.74)): ratingString="&#9733;"+"&#9733;"+"&#9733;"+"&#9733;"+"&#9734;";  break;
+    case ((Math.round(placeToRate.rating)==5)&&(placeToRate.rating>4.75)): ratingString="&#9733;"+"&#9733;"+"&#9733;"+"&#9733;"+"&#9733;"; break;
+
+  }
+
+return ratingString;
+}
+
+self.filterSelected.subscribe(function(newValue){
+  filterList(newValue);
+});
+
+function filterList(stars)
+{
+  console.log("new value is:",stars);
+
+  if ((stars==='all') && (self.places_set().length != self.filtered_places_set().lenght))
+                      { console.log('copy all places back in filter list');
+                        for (var i=0; i<self.places_set().length;i++)
+                                   { self.filtered_places_set.push(self.places_set()[i]);
+                                     self.markers_set()[i].setMap(map);
+                                   };
+                      };
+
+    if (stars!='all')
+          { self.filtered_places_set.removeAll();
+            for (var i=0; i<self.places_set().length;i++)
+                        { self.markers_set()[i].setMap(map);
+                          if (self.places_set()[i].hasOwnProperty('rating')) {
+                                                  console.log(self.places_set()[i].name," rating is ",self.places_set()[i].rating);  
+                                                if (Math.round(self.places_set()[i].rating)==stars)
+                                                      {  console.log(self.places_set()[i].name);
+                                                          self.filtered_places_set.push(self.places_set()[i]);
+                                                      }
+                                                      else self.markers_set()[i].setMap(null);
+                                                    }
+                        }
+            };
+
+  // self.filtered_places_set.removeAll();
+  // for (var i=0; i<self.places_set().length;i++)
+  //
+  //           //  self.filtered_places_set.push(self.places_set()[i]);
+  //
+  //             // else { if (self.places_set()[i].hasOwnProperty('rating'))
+  //             //             if (Math.round(self.places_set()[i].rating)==stars)
+              //               {  console.log(self.places_set()[i].name);
+              //                 self.filtered_places_set.push(self.places_set()[i]);
+              //               }
+              //     }
+
+
+            // console.log(self.places_set()[i].rating);
+
+
+
+  // self.filtered_places_set=ko.observableArray();
+  //need to filter the markers as well
+}
+
+// how to identify the index of an obect in an array depending on its property value
 // http://stackoverflow.com/questions/8668174/indexof-method-in-an-object-array
 
   highlightMarker=function() {
@@ -183,7 +275,7 @@ if (typeof google === 'undefined') alert("google api not loaded");
                 google.maps.event.trigger(self.markers_set()[index], 'mouseout');
               };
 
-clickSideImage=function() {
+  clickSideImage=function() {
               var object_id=this.id;
               var index=self.places_set().map(function(e) { return e.id; }).indexOf(object_id);
               var marker_location=self.places_set()[index].geometry.location;
@@ -206,7 +298,7 @@ dblclickSideImage=function(){
     detailedInfoWindow=popupCenter(this.url,this.name,800,550);
 }
 
-        function popupCenter(url, title, w, h) {
+function popupCenter(url, title, w, h) {
         //trebuie pus un modal
         var left = (screen.width/2)-(w/2);
         var top = (screen.height/2)-(h/2);
@@ -233,20 +325,11 @@ dblclickSideImage=function(){
 
             function eraseMarkers()
             {
-
-              //
               for (var i=0; i<self.markers_set().length; i++) self.markers_set()[i].setMap(null);
-              // self.markers_set().splice(0,array_size);
-              // self.places_set().splice(0,places_set_array_size);
-
-                  self.markers_set.removeAll();
-                  // console.log("self.markers_set, after removeAll:", self.markers_set);
-                  // self.markers_set=ko.observableArray();
-
-                  self.places_set.removeAll();
-                  // self.places_set=ko.observableArray();
-
-            }
+              self.markers_set.removeAll();
+              self.filtered_places_set.removeAll();
+              self.places_set.removeAll();
+              }
 
 
             function createMarker(place,i) {
@@ -290,6 +373,8 @@ dblclickSideImage=function(){
                 new google.maps.Size(21,34));
                 return markerImage;
               };
+
+
             function populateInfoWindow(marker, infowindow) {
                       TransitionToNewLocation(marker.internalPosition);
                       // Check to make sure the infowindow is not already opened on this marker.
@@ -302,6 +387,7 @@ dblclickSideImage=function(){
                           infowindow.marker = null;
                           marker.setIcon(makeMarkerIcon('0091ff'));
                         });
+
                         var streetViewService = new google.maps.StreetViewService();
                         var radius = 50;
 

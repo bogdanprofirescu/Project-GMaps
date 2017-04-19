@@ -31,21 +31,19 @@
          <a href="javascript:void(0)" id="close_btn" data-bind="event: {click: closeMenu}"><strong>&times;</strong></a>
          <br>
           <div id="navigation_items" class="form-group">
-            <p id="instructions">Type a city name and choose place to see proeminent attractions anywhere in the world!<p>
+            <p id="instructions">Enter details below  to find great places anywhere in the world!<p>
             <p class="label">Enter a city:
             <!-- <input id="areaChoice"  type="text" placeholder="enter city" value="Brasov"> -->
             <input id="areaChoice" placeholder="enter city" value="Brasov" type="text" data-bind="value: destination">
 <!-- type="text" data-bind="value: firstName" -->
             </p>
             <p class="label">Range from city center:
-            <input id="range"  type="text" placeholder="max 50000 meters" value="10000">
+            <input id="range"  type="text" placeholder="max 50000 meters" data-bind="value: range">
             </p>
             <p class="label">Choose a type of place:
-              <!-- <input id="typeOfPlace"  type="text" placeholder="places to visit in.." value="places to visit"> -->
             <select id="typeOfPlace"  data-bind="value: typeOfPlaceSelected">
               <option value="art gallery">art gallery</option>
               <option value="bar">bar</option>
-              <option value="church">church</option>
               <option value="palace castle">castle</option>
               <option value="lodging">lodging</option>
               <option value="museum" selected="">museum</option>
@@ -53,21 +51,34 @@
               <option value="restaurant">restaurant</option>
               <option value="shopping mall">shopping mall</option>
               <option value="spa">spa</option>
-              <option value="store">store</option>
               <option value="zoo">zoo</option>
             </select>
           </p>
           <button type="button"  id="searchBttn" class="label" data-bind="event: {click: findNewCenter}">Search</button>
-
         </div>
+        <p class="label">Filter results by:
+        <select id="filterPlace"  data-bind="value: filterSelected">
+          <option value="all" selected="">all</option>
+          <option value="1">&#9733;</option>
+          <option value="2">&#9733;&#9733;</option>
+          <option value="3">&#9733;&#9733;&#9733;</option>
+          <option value="4">&#9733;&#9733;&#9733;&#9733;</option>
+          <option value="5">&#9733;&#9733;&#9733;&#9733;&#9733;</option>
+        </select>
+      </p>
         <hr>
-        <div id="places" data-bind="foreach: places_set">
-          <div class="placeNameAndImage"  data-toggle="tooltip" title="Click to highlight marker &#013;Doublclick for more details" data-placement="left" data-bind="event: {mouseover: highlightMarker, mouseout: unHighlightMarker, click: clickSideImage, dblclick: dblclickSideImage}">
-            <p class="placeName" data-bind="text: name, attr:{id:id}"></p>
+        <div id="places" data-bind="foreach: filtered_places_set">
+          <div class="placeNameAndImage"  data-toggle="tooltip" data-placement="left" data-bind="event: {mouseover: highlightMarker, mouseout: unHighlightMarker, click: clickSideImage}">
+            <!-- <p class="placeName" data-bind="text: name, attr:{id:id}"></p> -->
+             <a href="javascript:void(0)" class="placeName" data-bind="text: name, attr:{id:id}, event: {click: dblclickSideImage}"></a>
+             <br>
+            <span class="ratingStars" data-bind="html: ratingStars"></span>
+            <span class="ratingStars" data-bind="html: ratingFigure"></span>
+            <br>
             <img data-bind="attr:{src: srcURL}" height="50" width="62">
+            <hr>
         </div>
         </div>
-        <hr>
       </div>
       <script src= "app.js"> </script>
         <!-- <script async defer src=

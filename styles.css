@@ -95,9 +95,8 @@ iframe {
   margin-bottom: 7px;
 }
 
-.sidenav a {
-  color: red;
-}
+/*.sidenav a {
+}*/
 
 .sidenav a:hover {
     color: #f1f1f1;
@@ -106,6 +105,7 @@ iframe {
 #close_btn {
 float: right;
 top: 0;
+color: red;
 }
 
 input, select, button {
@@ -119,6 +119,7 @@ input, select, button {
 {
   font-size: 12px;
   font-family: Arial, sans-serif;
+  color: white;
   /*font-family: Rockwell, sans-serif;*/
 
 }
@@ -128,7 +129,10 @@ input, select, button {
     /*background: rgba(255,255,255, 0.9);*/
     background: rgba(242,123,31,0.7);
 }
-
+.ratingStars {
+color: white;
+font-size: 10px;
+}
 hr, .placeName {
   margin-top: 2px;
   margin-bottom: 2px;
