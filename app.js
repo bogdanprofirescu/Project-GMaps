@@ -9,6 +9,7 @@ var self = this;
 self.markers_set=ko.observableArray();
 self.places_set=ko.observableArray();
 self.filtered_places_set=ko.observableArray();
+self.filtered_places_setRESET=ko.observableArray();
 
 self.destination=ko.observable('Brasov');
 self.typeOfPlaceSelected=ko.observable();
@@ -96,16 +97,20 @@ if (typeof google === 'undefined') alert("google api not loaded");
                                             var maxPlaces;
                                             if (results.length>10) maxPlaces=10
                                                         else maxPlaces=results.length;
+
+
                                             for (var i = 0; i < maxPlaces; i++)
                                                     {
                                                         var newPlaceToMark={ title: results[i].name,
                                                                             location: {lat: results[i].geometry.location.lat(),
                                                                                       lng: results[i].geometry.location.lng()}
                                                                             };
-                                                        // console.log("ask to create place no:",i);
+                                                        console.log("ask to create place no:",i);
                                                         createListItem(results[i].place_id, newPlaceToMark, i);
-
+                                                        // console.log("places set length before ANY filter:",self.places_set().length);
                                                     }
+
+
                                            TransitionToNewLocation(newCenter);
                                         }
                                 else {
@@ -115,15 +120,20 @@ if (typeof google === 'undefined') alert("google api not loaded");
                                   }
                                   console.log("#places identified:",results.length);
                                       }
+
                                   }
+
+
       }
 
-      function TransitionToNewLocation(newCenter) {
+    function TransitionToNewLocation(newCenter) {
         // console.log("new center translation");
               map.setCenter(newCenter);
               map.fitBounds(mapBounds);
               map.setZoom(12);
               map.panTo(newCenter);
+
+              console.log('end of story');
               // map.fitBounds(mapBounds);
               // only in this succesion I manage to center the map at the right zoom
               // console.log("zoom after new center:", map.getZoom());
@@ -135,7 +145,7 @@ if (typeof google === 'undefined') alert("google api not loaded");
             // var param=i;
             var string;
             var service = new google.maps.places.PlacesService(map);
-
+            console.log("creating list item",i);
               // https://developers.google.com/maps/documentation/javascript/examples/place-details
 
               service.getDetails({
@@ -149,7 +159,7 @@ if (typeof google === 'undefined') alert("google api not loaded");
                                             // console.log(place);
                                     }
                                     catch (e) {
-                                      console.log('no picture for:', place.name);
+                                      // console.log('no picture for:', place.name);
                                       // console.log(place);
                                       temp.srcURL='placeholder.png';
                                     }
@@ -157,8 +167,8 @@ if (typeof google === 'undefined') alert("google api not loaded");
                                     if (place.hasOwnProperty('rating'))
                                                                       {
                                                                         //  console.log(place.rating);
-                                                                        temp.ratingFigure=temp.rating;
                                                                         temp.ratingStars=createRatingForPlace(place);
+                                                                        temp.ratingFigure=temp.rating;
                                                                       }
                                               else {
                                                         // console.log(place.name," has no rating property");
@@ -166,10 +176,15 @@ if (typeof google === 'undefined') alert("google api not loaded");
                                                         temp.ratingFigure ='rated yet';
                                                       }
 
-
-                                      self.places_set.push(temp);
-                                      self.filtered_places_set.push(temp);
-                                      createMarker(newPlaceToMark,i);
+                                     self.places_set.push(temp);
+                                     //add  places in the filtered list after each new search by considering the filter value
+                                     var place_added=false;
+                                      switch(true) {
+                                                      case (self.filterSelected()=='all'):  self.filtered_places_set.push(temp); place_added=true; break;
+                                                      case (self.filterSelected()==Math.round(temp.rating)): self.filtered_places_set.push(temp); place_added=true; break;
+                                                      case ((self.filterSelected()==0) && (temp.ratingStars =='not')): self.filtered_places_set.push(temp); place_added=true; break;
+                                                    }
+                                      createMarker(newPlaceToMark,i,place_added);
                                                               }
                                                               else {
                                                                 console.log(status);
@@ -211,53 +226,50 @@ self.filterSelected.subscribe(function(newValue){
 
 function filterList(stars)
 {
-  console.log("new value is:",stars);
+  console.log("filter value is:",stars);
 
-  if ((stars==='all') && (self.places_set().length != self.filtered_places_set().lenght))
+//do not try to filter is all is reselected and all elements in list are already present
+  if ((stars=='all') && (self.places_set().length != self.filtered_places_set().length))
                       { console.log('copy all places back in filter list');
+                        console.log('places length:',self.places_set().length);
+                        console.log('filtered places length',self.filtered_places_set().lenght);
                         for (var i=0; i<self.places_set().length;i++)
                                    { self.filtered_places_set.push(self.places_set()[i]);
                                      self.markers_set()[i].setMap(map);
                                    };
                       };
-
+//filter if any other option than all is selected
     if (stars!='all')
-          { self.filtered_places_set.removeAll();
+          { console.log('checking values for stars!=all');
+
+            self.filtered_places_set.removeAll();
+            console.log('filtered_places_set length:', self.filtered_places_set().length);
+            // console.log('new filtered array:', self.filtered_places_set());
+
+            for (var j=0; j<self.markers_set().length;j++) self.markers_set()[j].setMap(null);
+
+            console.log("length of places_set is:",self.places_set().length);
             for (var i=0; i<self.places_set().length;i++)
-                        { self.markers_set()[i].setMap(map);
-                          if (self.places_set()[i].hasOwnProperty('rating')) {
-                                                  console.log(self.places_set()[i].name," rating is ",self.places_set()[i].rating);  
-                                                if (Math.round(self.places_set()[i].rating)==stars)
-                                                      {  console.log(self.places_set()[i].name);
-                                                          self.filtered_places_set.push(self.places_set()[i]);
-                                                      }
-                                                      else self.markers_set()[i].setMap(null);
-                                                    }
-                        }
-            };
-
-  // self.filtered_places_set.removeAll();
-  // for (var i=0; i<self.places_set().length;i++)
-  //
-  //           //  self.filtered_places_set.push(self.places_set()[i]);
-  //
-  //             // else { if (self.places_set()[i].hasOwnProperty('rating'))
-  //             //             if (Math.round(self.places_set()[i].rating)==stars)
-              //               {  console.log(self.places_set()[i].name);
-              //                 self.filtered_places_set.push(self.places_set()[i]);
-              //               }
-              //     }
-
-
-            // console.log(self.places_set()[i].rating);
-
-
-
-  // self.filtered_places_set=ko.observableArray();
-  //need to filter the markers as well
+                        {
+                          console.log("entering switch, for place:",i);
+                  switch (true) {
+                          case ((Math.round(self.places_set()[i].rating)==stars)):  {
+                                                            console.log(self.places_set()[i].name," rating is ",self.places_set()[i].rating);
+                                                            self.filtered_places_set.push(self.places_set()[i]);
+                                                            self.markers_set()[i].setMap(map);
+                                                    }; break;
+                          case ((!(self.places_set()[i].hasOwnProperty('rating')))&&(stars==0)):
+                                                              {
+                                                                console.log(self.places_set()[i].name," rating is ",self.places_set()[i].rating);
+                                                                self.filtered_places_set.push(self.places_set()[i]);
+                                                                self.markers_set()[i].setMap(map);
+                                                              }; break;
+                                                  }
+                      }
+  };
 }
 
-// how to identify the index of an obect in an array depending on its property value
+// how to identify the index of an object in an array depending on its property value
 // http://stackoverflow.com/questions/8668174/indexof-method-in-an-object-array
 
   highlightMarker=function() {
@@ -332,10 +344,13 @@ function popupCenter(url, title, w, h) {
               }
 
 
-            function createMarker(place,i) {
+            function createMarker(place,i,mapTrue) {
+              var markerVisible;
+              if (mapTrue==true) markerVisible=map;
+                  else markerVisible=null;
               var defaultIcon = makeMarkerIcon('0091ff');
               var marker = new google.maps.Marker({
-                map: map,
+                map: markerVisible,
                 title: place.title,
                 icon: defaultIcon,
                 animation: google.maps.Animation.DROP,
@@ -376,7 +391,7 @@ function popupCenter(url, title, w, h) {
 
 
             function populateInfoWindow(marker, infowindow) {
-                      TransitionToNewLocation(marker.internalPosition);
+                       TransitionToNewLocation(marker.internalPosition);
                       // Check to make sure the infowindow is not already opened on this marker.
                       if (infowindow.marker != marker) {
                         infowindow.marker = marker;
