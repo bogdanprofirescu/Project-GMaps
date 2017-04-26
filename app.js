@@ -363,7 +363,8 @@ function popupCenter(url, title, w, h) {
                 map.fitBounds(mapBounds);
                 google.maps.event.addListener(marker, 'click', function() {
                 this.setIcon(makeMarkerIcon('f27b1f'));
-                populateInfoWindow(this, infowindow);
+                // populateInfoWindow(this, infowindow);
+                getWiki(this,infowindow);
               });
 
               google.maps.event.addListener(marker, 'mouseover', function() {
@@ -389,9 +390,44 @@ function popupCenter(url, title, w, h) {
                 return markerImage;
               };
 
+function getWiki(marker,infowindow)
+{
+  var markerWikiLink="Wikipedia info not available for this place";
+  var markerWikiLinkName="No articles for this place";
+  var htmlInfo="";
+  var maxNoOfArticles;
 
-            function populateInfoWindow(marker, infowindow) {
+  var wikiRequestTimeout=setTimeout(function(){
+      console.log("Ooops..: Failed to load Wikipedia resources..");
+      populateInfoWindow(marker,infowindow,markerWikiLink);
+  },2000);
+
+var wikiURL='http://en.wikipedia.org/w/api.php?action=opensearch&search='+ marker.title +'&format=json';
+// var markerWikiArticleList;
+// console.log('WIKI request on ',marker.title,' info');
+
+$.ajax(wikiURL,{
+  dataType:"jsonp"
+}).done( function(response) {
+
+  markerWikiLinkName=response[1];
+  markerWikiLink=response[3];
+  if (markerWikiLinkName.length>3) maxNoOfArticles=3;
+          else maxNoOfArticles=markerWikiLinkName.length;
+  for (var i=0; i<maxNoOfArticles;i++) {
+        // htmlInfo+='<li><a href="'+markerWikiLink[i]+'" target="_blank">'+markerWikiLinkName[i]+'</a></li>';
+        htmlInfo+='<p><a href="'+markerWikiLink[i]+'">'+markerWikiLinkName[i]+'</a></p>';
+          };
+
+    clearTimeout(wikiRequestTimeout);
+    populateInfoWindow(marker,infowindow,htmlInfo);
+});
+
+}
+
+            function populateInfoWindow(marker, infowindow,htmlWikiInfo) {
                        TransitionToNewLocation(marker.internalPosition);
+                      //  console.log("wikilink size is: ", wikiLink.length);
                       // Check to make sure the infowindow is not already opened on this marker.
                       if (infowindow.marker != marker) {
                         infowindow.marker = marker;
@@ -412,8 +448,7 @@ function popupCenter(url, title, w, h) {
                               if (status == google.maps.StreetViewStatus.OK) {
                                 var nearStreetViewLocation = data.location.latLng;
                                 var heading = google.maps.geometry.spherical.computeHeading(nearStreetViewLocation, marker.position);
-                                infowindow.setContent("<div>" + marker.title + "</div><div id=\"pano\"></div>");
-
+                                infowindow.setContent("<div>" + marker.title + "</div><div id=\"pano\"></div>"+"<div>"+htmlWikiInfo+"</div>");
                                 var panoramaOptions = {
                                   position: nearStreetViewLocation,
                                 pov: {
@@ -430,6 +465,7 @@ function popupCenter(url, title, w, h) {
                   // Use streetview service to get the closest streetview image within
                   // 50 meters of the markers position
                      streetViewService.getPanoramaByLocation(marker.position, radius, getStreetView);
+                     console.log(infowindow);
                   // Open the infowindow on the correct marker.
                     infowindow.open(map, marker);
                       }
