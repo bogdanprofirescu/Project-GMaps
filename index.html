@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
-  <head>
+
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
@@ -12,76 +13,76 @@
     <script src="https://maps.googleapis.com/maps/api/js?libraries=places,geometry,drawing&key=AIzaSyARDaZozs7u65RbsBI4Xjwx7jJJ87iUAjY&v=3">
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.2/knockout-min.js"></script>
-    <script
-  src="https://code.jquery.com/jquery-3.2.1.js"
-  integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE="
-  crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.js" integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE=" crossorigin="anonymous"></script>
 
-  </head>
+</head>
 
-    <body>
-      <div class="layout" id="layout"></div>
-       <div id="main">
+<body>
+    <div class="layout" id="layout"></div>
+    <div id="main">
         <div id="map"></div>
-            <div id="start_btn_background">
-            <p id="start_btn" data-bind="event: {click: openMenu}"><strong>&#9776; menu</strong></p>
+        <div id="start_btn_background">
+            <p id="start_btn" data-bind="event: {click: openMenu}"><strong>&#9776; menu</strong>
+            </p>
             <br>
         </div>
-      </div>
-       <div id="navigationBar" class="sidenav">
-         <a href="javascript:void(0)" id="close_btn" data-bind="event: {click: closeMenu}"><strong>&times;</strong></a>
-         <br>
-          <div id="navigation_items" class="form-group">
-            <p id="instructions">Enter details below  to find great places anywhere in the world!<p>
-            <p class="label">Enter a city:
-            <!-- <input id="areaChoice"  type="text" placeholder="enter city" value="Brasov"> -->
-            <input id="areaChoice" placeholder="enter city" value="Brasov" type="text" data-bind="value: destination">
-<!-- type="text" data-bind="value: firstName" -->
-            </p>
-            <p class="label">Range from center:
-            <input id="range"  type="text" placeholder="max 50000 meters" data-bind="value: range">
-            </p>
-            <p class="label">ype of place:
-            <select id="typeOfPlace"  data-bind="value: typeOfPlaceSelected">
-              <option value="art gallery">art gallery</option>
-              <option value="bar">bar</option>
-              <option value="palace castle">castle</option>
-              <option value="lodging">lodging</option>
-              <option value="museum" selected="">museum</option>
-              <option value="park">park</option>
-              <option value="restaurant">restaurant</option>
-              <option value="shopping mall">shopping mall</option>
-              <option value="spa">spa</option>
-              <option value="zoo">zoo</option>
-            </select>
-          </p>
-          <button type="button"  id="searchBttn" class="label" data-bind="event: {click: findNewCenter}">Search</button>
+    </div>
+    <div id="navigationBar" class="sidenav">
+        <a href="javascript:void(0)" id="close_btn" data-bind="event: {click: closeMenu}"><strong>&times;</strong></a>
+        <br>
+        <div id="navigation_items" class="form-group">
+            <p id="instructions">Enter details below to find great places anywhere in the world!
+                <p>
+                    <p class="label">Enter a city:
+                        <!-- <input id="areaChoice"  type="text" placeholder="enter city" value="Brasov"> -->
+                        <input id="areaChoice" placeholder="enter city" value="Brasov" type="text" data-bind="value: destination">
+                        <!-- type="text" data-bind="value: firstName" -->
+                    </p>
+                    <p class="label">Range from center:
+                        <input id="range" type="text" placeholder="max 50000 meters" data-bind="value: range">
+                    </p>
+                    <p class="label">ype of place:
+                        <select id="typeOfPlace" data-bind="value: typeOfPlaceSelected">
+                            <option value="art gallery">art gallery</option>
+                            <option value="bar">bar</option>
+                            <option value="castle">castle</option>
+                            <option value="lodging">lodging</option>
+                            <option value="museum" selected="">museum</option>
+                            <option value="park">park</option>
+                            <option value="restaurant">restaurant</option>
+                            <option value="shopping mall">shopping mall</option>
+                            <option value="spa">spa</option>
+                            <option value="zoo">zoo</option>
+                        </select>
+                    </p>
+                    <button type="button" id="searchBttn" class="label" data-bind="event: {click: findNewCenter}">Search</button>
         </div>
         <p class="label">Filter results by:
-        <select id="filterPlace"  data-bind="value: filterSelected">
-          <option value="all" selected="">all</option>
-          <option value="1">&#9733;</option>
-          <option value="2">&#9733;&#9733;</option>
-          <option value="3">&#9733;&#9733;&#9733;</option>
-          <option value="4">&#9733;&#9733;&#9733;&#9733;</option>
-          <option value="5">&#9733;&#9733;&#9733;&#9733;&#9733;</option>
-          <option value="0">not rated</option>
-        </select>
-      </p>
-      <!-- <input class="form-control" data-bind="value: queryListItems, valueUpdate: 'keypress'" autocomplete="off" placeholder="search a place"> -->
+            <select id="filterPlace" data-bind="value: filterSelected">
+                <option value="all" selected="">all</option>
+                <option value="1">&#9733;</option>
+                <option value="2">&#9733;&#9733;</option>
+                <option value="3">&#9733;&#9733;&#9733;</option>
+                <option value="4">&#9733;&#9733;&#9733;&#9733;</option>
+                <option value="5">&#9733;&#9733;&#9733;&#9733;&#9733;</option>
+                <option value="0">not rated</option>
+            </select>
+        </p>
         <hr>
         <div id="places" data-bind="foreach: filtered_places_set">
-          <div class="placeNameAndImage"  data-toggle="tooltip" data-placement="left" data-bind="event: {mouseover: highlightMarker, mouseout: unHighlightMarker, click: clickSideImage}">
-            <a href="javascript:void(0)" class="placeName" data-bind="text: name, attr:{id:id}, event: {click: dblclickSideImage}"></a>
-             <br>
-            <span class="ratingStars" data-bind="html: ratingStars"></span>
-            <span class="ratingStars" data-bind="html: ratingFigure"></span>
-            <br>
-            <img data-bind="attr:{src: srcURL}" height="50" width="62">
-            <hr>
+            <div class="placeNameAndImage" data-toggle="tooltip" data-placement="left" data-bind="event: {mouseover: highlightMarker, mouseout: unHighlightMarker, click: clickSideImage}">
+                <a href="javascript:void(0)" class="placeName" data-bind="text: name, attr:{id:id}, event: {click: dblclickSideImage}"></a>
+                <br>
+                <span class="ratingStars" data-bind="html: ratingStars"></span>
+                <span class="ratingStars" data-bind="html: ratingFigure"></span>
+                <br>
+                <img data-bind="attr:{src: srcURL}" height="50" width="62">
+                <hr>
+            </div>
         </div>
-        </div>
-      </div>
-      <script src= "app.js"> </script>
-  </body>
+    </div>
+    <script src="app.js">
+    </script>
+</body>
+
 </html>

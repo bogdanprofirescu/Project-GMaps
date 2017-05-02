@@ -1,161 +1,160 @@
-
-html, body, #main {
-    height:100%;
+html,
+body,
+#main {
+    height: 100%;
     width: 100%;
     margin: 0;
     font-family: Arial, sans-serif;
-    overflow-x: hidden; /* Disable horizontal scroll */
+    overflow-x: hidden;
+    /* Disable horizontal scroll */
+
     overflow-y: hidden;
-    }
-
-#pano {
-   width: 250px;
-   height: 250px;
- }
-#map{
-      z-index: 1;
-      height:100%;
-      width: 100%;
 }
-
+#pano {
+    width: 250px;
+    height: 250px;
+}
+#map {
+    z-index: 1;
+    height: 100%;
+    width: 100%;
+}
 #main {
     position: fixed;
     margin-left: 0;
 }
-
 iframe {
-  width: 100%;
-  height: 100%;
-  align: right;
-  margin-left: 200px;
+    width: 100%;
+    height: 100%;
+    align: right;
+    margin-left: 200px;
 }
-
-#start_btn
-{
-  position: absolute;
-  padding: 5;
-  margin: 0;
-  top: 0;
-  z-index: 3;
-  font-size: 16px;
-  color: white;
-  cursor: pointer;
- }
-
-#start_btn_background
-{
-  width: 70px;
-  height: 25px;
-  position: absolute;
-  padding: 5;
-  margin: 0;
-  top: 0;
-  background: rgba(0,0,0, 0.7);
-  z-index: 2;
-  display: none;
+#start_btn {
+    position: absolute;
+    padding: 5;
+    margin: 0;
+    top: 0;
+    z-index: 3;
+    font-size: 16px;
+    color: white;
+    cursor: pointer;
 }
-
-#start_btn_background:hover
-{
-  background: rgba(242,123,31,0.7);
+#start_btn_background {
+    width: 70px;
+    height: 25px;
+    position: absolute;
+    padding: 5;
+    margin: 0;
+    top: 0;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 2;
+    display: none;
 }
-
+#start_btn_background:hover {
+    background: rgba(242, 123, 31, 0.7);
+}
 .sidenav {
-    height: 100%; /* 100% Full-height */
-    width: 0; /* 0 width - change this with JavaScript */
-    position: fixed; /* Stay in place */
-    z-index: 1; /* Stay on top */
+    height: 100%;
+    /* 100% Full-height */
+
+    width: 0;
+    /* 0 width - change this with JavaScript */
+
+    position: fixed;
+    /* Stay in place */
+
+    z-index: 1;
+    /* Stay on top */
+
     top: 0;
     left: 0;
-    background: rgba(0,0,0, 0.7);
-    overflow-x: hidden; /* Disable horizontal scroll */
+    background: rgba(0, 0, 0, 0.7);
+    overflow-x: hidden;
+    /* Disable horizontal scroll */
+
     width: 160px;
-    transition: 0.5s; /* 0.5 second transition effect to slide in the sidenav */
-    padding: 10px  ;
-}
+    transition: 0.5s;
+    /* 0.5 second transition effect to slide in the sidenav */
 
+    padding: 10px;
+}
 .sidenav p {
-  color: white;
+    color: white;
 }
-#instructions
-{
-  font-size: 14px;
-  text-align: left;
-  width: 80%;
-  padding: 0;
-  border: 0;
-  font-style: italic;
+#instructions {
+    font-size: 14px;
+    text-align: left;
+    width: 80%;
+    padding: 0;
+    border: 0;
+    font-style: italic;
 }
-
 .label {
-  font-size: 13px;
-  font-weight: lighter;
-  margin-left: 0;
-  margin-right: 0;
-  margin-top:7px;
-  margin-bottom: 7px;
+    font-size: 13px;
+    font-weight: lighter;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 7px;
+    margin-bottom: 7px;
 }
-
 /*.sidenav a {
 }*/
 
 .sidenav a:hover {
     color: #f1f1f1;
 }
-
 #close_btn {
-float: right;
-top: 0;
-color: red;
+    float: right;
+    top: 0;
+    color: red;
 }
-
-input, select, button {
-  width: 80%;
-  padding: 0;
-  border: 0;
- line-height: 1.5em;
+input,
+select,
+button {
+    width: 80%;
+    padding: 0;
+    border: 0;
+    line-height: 1.5em;
 }
-
-.placeName
-{
-  font-size: 12px;
-  font-family: Arial, sans-serif;
-  color: white;
-  /*font-family: Rockwell, sans-serif;*/
-
+.placeName {
+    font-size: 12px;
+    font-family: Arial, sans-serif;
+    color: white;
+    /*font-family: Rockwell, sans-serif;*/
 }
-
 .placeNameAndImage:hover {
     /*background-color: black;*/
     /*background: rgba(255,255,255, 0.9);*/
-    background: rgba(242,123,31,0.7);
+
+    background: rgba(242, 123, 31, 0.7);
 }
 .ratingStars {
-color: white;
-font-size: 10px;
+    color: white;
+    font-size: 10px;
 }
-hr, .placeName {
-  margin-top: 2px;
-  margin-bottom: 2px;
+hr,
+.placeName {
+    margin-top: 2px;
+    margin-bottom: 2px;
 }
-
 /* On smaller screens less padding, smaller fonts size) */
+
 @media screen and (max-width: 700px) {
-
     .sidenav {
-      /*padding-top: 20px;*/
-      font-size: 12px;
-      font-weight: bold;
-     }
-     .label {
-       font-size: 12px;
-     }
+        /*padding-top: 20px;*/
 
-    #start_btn, #close_btn {
-      font-size: 16px;
+        font-size: 12px;
+        font-weight: bold;
     }
-    #start_btn_background
-        {
-                width: 75px;
-                height: 25px; }
+    .label {
+        font-size: 12px;
+    }
+    #start_btn,
+    #close_btn {
+        font-size: 16px;
+    }
+    #start_btn_background {
+        width: 75px;
+        height: 25px;
+    }
 }
