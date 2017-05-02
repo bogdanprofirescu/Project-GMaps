@@ -8,7 +8,7 @@
     <!--TODO: add Brasov city logo as favicon-->
     <link rel="stylesheet" href="styles.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-    
+
     <script src="https://maps.googleapis.com/maps/api/js?libraries=places,geometry,drawing&key=AIzaSyARDaZozs7u65RbsBI4Xjwx7jJJ87iUAjY&v=3">
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.2/knockout-min.js"></script>
@@ -38,10 +38,10 @@
             <input id="areaChoice" placeholder="enter city" value="Brasov" type="text" data-bind="value: destination">
 <!-- type="text" data-bind="value: firstName" -->
             </p>
-            <p class="label">Range from city center:
+            <p class="label">Range from center:
             <input id="range"  type="text" placeholder="max 50000 meters" data-bind="value: range">
             </p>
-            <p class="label">Choose a type of place:
+            <p class="label">ype of place:
             <select id="typeOfPlace"  data-bind="value: typeOfPlaceSelected">
               <option value="art gallery">art gallery</option>
               <option value="bar">bar</option>
@@ -68,11 +68,11 @@
           <option value="0">not rated</option>
         </select>
       </p>
+      <!-- <input class="form-control" data-bind="value: queryListItems, valueUpdate: 'keypress'" autocomplete="off" placeholder="search a place"> -->
         <hr>
         <div id="places" data-bind="foreach: filtered_places_set">
           <div class="placeNameAndImage"  data-toggle="tooltip" data-placement="left" data-bind="event: {mouseover: highlightMarker, mouseout: unHighlightMarker, click: clickSideImage}">
-            <!-- <p class="placeName" data-bind="text: name, attr:{id:id}"></p> -->
-             <a href="javascript:void(0)" class="placeName" data-bind="text: name, attr:{id:id}, event: {click: dblclickSideImage}"></a>
+            <a href="javascript:void(0)" class="placeName" data-bind="text: name, attr:{id:id}, event: {click: dblclickSideImage}"></a>
              <br>
             <span class="ratingStars" data-bind="html: ratingStars"></span>
             <span class="ratingStars" data-bind="html: ratingFigure"></span>
@@ -83,9 +83,5 @@
         </div>
       </div>
       <script src= "app.js"> </script>
-        <!-- <script async defer src=
-        "https://maps.googleapis.com/maps/api/js?libraries=places,geometry,drawing&key=AIzaSyARDaZozs7u65RbsBI4Xjwx7jJJ87iUAjY&v=3&callback=initMap">
-        </script> -->
-
   </body>
 </html>

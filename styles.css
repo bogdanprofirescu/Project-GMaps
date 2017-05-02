@@ -80,10 +80,11 @@ iframe {
 #instructions
 {
   font-size: 14px;
-  text-align: justify;
+  text-align: left;
   width: 80%;
   padding: 0;
   border: 0;
+  font-style: italic;
 }
 
 .label {

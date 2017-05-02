@@ -2,7 +2,6 @@
 function viewModel()
 {
 
-// var divSideNavPlaces = document.getElementById('places');
 var map;
 var self = this;
 
@@ -10,6 +9,8 @@ self.markers_set=ko.observableArray();
 self.places_set=ko.observableArray();
 self.filtered_places_set=ko.observableArray();
 self.filtered_places_setRESET=ko.observableArray();
+
+self.queryListItems = ko.observable('');
 
 self.destination=ko.observable('Brasov');
 self.typeOfPlaceSelected=ko.observable();
@@ -46,7 +47,7 @@ if (typeof google === 'undefined') alert("google api not loaded");
 
   map = new google.maps.Map(document.getElementById('map'), {
     // center: {lat: 45.642024, lng: 25.589116},
-    zoom: 14,
+    zoom: 10,
       mapTypeControlOptions: {
               style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
               position: google.maps.ControlPosition.TOP_CENTER
@@ -105,7 +106,7 @@ if (typeof google === 'undefined') alert("google api not loaded");
                                                                             location: {lat: results[i].geometry.location.lat(),
                                                                                       lng: results[i].geometry.location.lng()}
                                                                             };
-                                                        console.log("ask to create place no:",i);
+                                                        // console.log("ask to create place no:",i);
                                                         createListItem(results[i].place_id, newPlaceToMark, i);
                                                         // console.log("places set length before ANY filter:",self.places_set().length);
                                                     }
@@ -127,16 +128,10 @@ if (typeof google === 'undefined') alert("google api not loaded");
       }
 
     function TransitionToNewLocation(newCenter) {
-        // console.log("new center translation");
+                      // console.log("new center translation");
               map.setCenter(newCenter);
+              map.setZoom(10);
               map.fitBounds(mapBounds);
-              map.setZoom(12);
-              map.panTo(newCenter);
-
-              console.log('end of story');
-              // map.fitBounds(mapBounds);
-              // only in this succesion I manage to center the map at the right zoom
-              // console.log("zoom after new center:", map.getZoom());
       }
 
 
@@ -145,7 +140,7 @@ if (typeof google === 'undefined') alert("google api not loaded");
             // var param=i;
             var string;
             var service = new google.maps.places.PlacesService(map);
-            console.log("creating list item",i);
+            // console.log("creating list item",i);
               // https://developers.google.com/maps/documentation/javascript/examples/place-details
 
               service.getDetails({
@@ -177,7 +172,8 @@ if (typeof google === 'undefined') alert("google api not loaded");
                                                       }
 
                                      self.places_set.push(temp);
-                                     //add  places in the filtered list after each new search by considering the filter value
+                                    //  console.log(typeof(self.places_set().filter);
+                                   //add  places in the filtered list after each new search by considering the filter value
                                      var place_added=false;
                                       switch(true) {
                                                       case (self.filterSelected()=='all'):  self.filtered_places_set.push(temp); place_added=true; break;
@@ -226,7 +222,7 @@ self.filterSelected.subscribe(function(newValue){
 
 function filterList(stars)
 {
-  console.log("filter value is:",stars);
+  // console.log("filter value is:",stars);
 
 //do not try to filter is all is reselected and all elements in list are already present
   if ((stars=='all') && (self.places_set().length != self.filtered_places_set().length))
@@ -251,10 +247,10 @@ function filterList(stars)
             console.log("length of places_set is:",self.places_set().length);
             for (var i=0; i<self.places_set().length;i++)
                         {
-                          console.log("entering switch, for place:",i);
+                          // console.log("entering switch, for place:",i);
                   switch (true) {
                           case ((Math.round(self.places_set()[i].rating)==stars)):  {
-                                                            console.log(self.places_set()[i].name," rating is ",self.places_set()[i].rating);
+                                                            // console.log(self.places_set()[i].name," rating is ",self.places_set()[i].rating);
                                                             self.filtered_places_set.push(self.places_set()[i]);
                                                             self.markers_set()[i].setMap(map);
                                                     }; break;
@@ -268,6 +264,8 @@ function filterList(stars)
                       }
   };
 }
+
+
 
 // how to identify the index of an object in an array depending on its property value
 // http://stackoverflow.com/questions/8668174/indexof-method-in-an-object-array
@@ -310,8 +308,9 @@ dblclickSideImage=function(){
     detailedInfoWindow=popupCenter(this.url,this.name,800,550);
 }
 
-function popupCenter(url, title, w, h) {
+popupCenter=function(url, title, w, h) {
         //trebuie pus un modal
+
         var left = (screen.width/2)-(w/2);
         var top = (screen.height/2)-(h/2);
         // window.close();
@@ -321,7 +320,7 @@ function popupCenter(url, title, w, h) {
 
 
 
-        function animateMarker(i)
+  function animateMarker(i)
         {
           self.markers_set()[i].icon=makeMarkerIcon('f27b1f');
           for (var j = 0; j < 5; j++)
@@ -335,7 +334,7 @@ function popupCenter(url, title, w, h) {
         }
 
 
-            function eraseMarkers()
+    function eraseMarkers()
             {
               for (var i=0; i<self.markers_set().length; i++) self.markers_set()[i].setMap(null);
               self.markers_set.removeAll();
@@ -344,7 +343,7 @@ function popupCenter(url, title, w, h) {
               }
 
 
-            function createMarker(place,i,mapTrue) {
+  function createMarker(place,i,mapTrue) {
               var markerVisible;
               if (mapTrue==true) markerVisible=map;
                   else markerVisible=null;
@@ -378,8 +377,8 @@ function popupCenter(url, title, w, h) {
             }
 
 
-            function makeMarkerIcon(markerColor) {
-                // console.log("makeMarkerIcon called");
+  function makeMarkerIcon(markerColor) {
+              // console.log("makeMarkerIcon called");
                 var markerImage = new google.maps.MarkerImage(
                 'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|'+ markerColor +
                 '|40|_|%E2%80%A2',
@@ -414,16 +413,24 @@ $.ajax(wikiURL,{
   markerWikiLink=response[3];
   if (markerWikiLinkName.length>3) maxNoOfArticles=3;
           else maxNoOfArticles=markerWikiLinkName.length;
-  for (var i=0; i<maxNoOfArticles;i++) {
+  console.log("#of articles:",markerWikiLinkName.length);
+  console.log("max no of articles: ",maxNoOfArticles);
+  if (markerWikiLinkName.length!=0)  for (var i=0; i<maxNoOfArticles;i++) {
         // htmlInfo+='<li><a href="'+markerWikiLink[i]+'" target="_blank">'+markerWikiLinkName[i]+'</a></li>';
-        htmlInfo+='<p><a href="'+markerWikiLink[i]+'">'+markerWikiLinkName[i]+'</a></p>';
-          };
+        htmlInfo+='<p><a class="popup" href="'+markerWikiLink[i]+'">'+markerWikiLinkName[i]+'</a></p>';
+          }
+          else htmlInfo="<br>No wikipedia info available for this place.";
+
 
     clearTimeout(wikiRequestTimeout);
     populateInfoWindow(marker,infowindow,htmlInfo);
 });
 
 }
+// HOW TO SEARCH IN AN OBSERVABLE ARRAY
+// http://stackoverflow.com/questions/29667134/knockout-search-in-observable-array
+
+
 
             function populateInfoWindow(marker, infowindow,htmlWikiInfo) {
                        TransitionToNewLocation(marker.internalPosition);
@@ -465,11 +472,12 @@ $.ajax(wikiURL,{
                   // Use streetview service to get the closest streetview image within
                   // 50 meters of the markers position
                      streetViewService.getPanoramaByLocation(marker.position, radius, getStreetView);
-                     console.log(infowindow);
+                    //  console.log(infowindow);
                   // Open the infowindow on the correct marker.
                     infowindow.open(map, marker);
                       }
                     }
+
 initMap();
     }
 
