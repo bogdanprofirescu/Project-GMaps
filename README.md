@@ -30,6 +30,6 @@ The user can see a street view of the places suggested to visit by clicking on t
 
 * on how to identify the index of an object in an array depending on its property value -  http://stackoverflow.com/questions/8668174/indexof-method-in-an-object-array
 
-* on how to check if a marker is present on map - // http://stackoverflow.com/questions/6100514/google-maps-v3-check-if-marker-is-present-on-map
+* on how to check if a marker is present on map -  http://stackoverflow.com/questions/6100514/google-maps-v3-check-if-marker-is-present-on-map
 
-* google documentation about on maps v3 - // https://developers.google.com/maps/documentation/javascript/examples/place-details
+* google documentation about on maps v3 -  https://developers.google.com/maps/documentation/javascript/examples/place-details

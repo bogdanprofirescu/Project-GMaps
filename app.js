@@ -6,7 +6,7 @@ function viewModel() {
     self.markers_set = ko.observableArray();
     self.places_set = ko.observableArray();
     self.filtered_places_set = ko.observableArray();
-    self.destination = ko.observable('Brasov');
+    self.destination = ko.observable('Vienna');
     self.typeOfPlaceSelected = ko.observable();
     self.range = ko.observable(10000);
     self.filterSelected = ko.observable('all');
