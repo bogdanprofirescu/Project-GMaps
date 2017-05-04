@@ -6,11 +6,9 @@ function viewModel() {
     self.markers_set = ko.observableArray();
     self.places_set = ko.observableArray();
     self.filtered_places_set = ko.observableArray();
-
-
     self.destination = ko.observable('Brasov');
     self.typeOfPlaceSelected = ko.observable();
-    self.range = ko.observable(15000);
+    self.range = ko.observable(10000);
     self.filterSelected = ko.observable('all');
 
     var infowindow, detailedInfoWindow, newCenter;
@@ -34,11 +32,8 @@ function viewModel() {
     }
 
     function initMap() {
-        //TODO - se poate adauga styles pentru harta, ca in maps2
+
         if (typeof google === 'undefined') alert("google api not loaded");
-        // TO DO error handling to be improved,
-        //as google object exists even without internet access
-        //onerror function does not work
 
         map = new google.maps.Map(document.getElementById('map'), {
             // center: {lat: 45.642024, lng: 25.589116},
@@ -63,7 +58,7 @@ function viewModel() {
     };
 
     findNewCenter = function() {
-        eraseMarkers();
+            eraseMarkers();
         var geocoder = new google.maps.Geocoder();
         geocoder.geocode({
                 address: self.destination()
@@ -89,12 +84,8 @@ function viewModel() {
         function callback(results, status) {
             if (status === google.maps.places.PlacesServiceStatus.OK) {
                 mapBounds = mapBoundsReset;
-                var maxPlaces;
-                if (results.length > 10) maxPlaces = 10
-                else maxPlaces = results.length;
 
-
-                for (var i = 0; i < maxPlaces; i++) {
+                for (var i = 0; i < results.length; i++) {
                     var newPlaceToMark = {
                         title: results[i].name,
                         location: {
@@ -102,9 +93,8 @@ function viewModel() {
                             lng: results[i].geometry.location.lng()
                         }
                     };
-                    // console.log("ask to create place no:",i);
+
                     createListItem(results[i].place_id, newPlaceToMark, i);
-                    // console.log("places set length before ANY filter:",self.places_set().length);
                 }
 
 
@@ -116,17 +106,16 @@ function viewModel() {
                 }
                 console.log("#places identified:", results.length);
             }
-
         }
-
-
     }
 
     function TransitionToNewLocation(newCenter) {
-        // console.log("new center translation");
-        map.setCenter(newCenter);
-        map.setZoom(10);
+
+        // // map.setCenter(newCenter);
+        // map.fitBounds(mapBounds);
         map.fitBounds(mapBounds);
+        map.panToBounds(mapBounds);
+        map.setZoom(10);
     }
 
 
@@ -134,7 +123,7 @@ function viewModel() {
         // var param=i;
         var string;
         var service = new google.maps.places.PlacesService(map);
-        // console.log("creating list item",i);
+
         // https://developers.google.com/maps/documentation/javascript/examples/place-details
 
         service.getDetails({
@@ -143,31 +132,28 @@ function viewModel() {
             if (status === google.maps.places.PlacesServiceStatus.OK) {
                 var temp = place;
                 try {
-                    // place.photos[0].getUrl({'maxWidth': 80, 'maxHeight': 92});
+
                     temp.srcURL = place.photos[0].getUrl({
                         'maxWidth': 80,
                         'maxHeight': 92
                     });
-                    // console.log(place);
+
                 } catch (e) {
-                    // console.log('no picture for:', place.name);
-                    // console.log(place);
+                    console.log('no picture for:', place.name);
                     temp.srcURL = 'placeholder.png';
                 }
 
                 if (place.hasOwnProperty('rating')) {
-                    //  console.log(place.rating);
                     temp.ratingStars = createRatingForPlace(place);
                     temp.ratingFigure = temp.rating;
                 } else {
-                    // console.log(place.name," has no rating property");
+                    console.log(place.name," has no rating property");
                     temp.ratingStars = 'not';
                     temp.ratingFigure = 'rated yet';
                 }
 
                 self.places_set.push(temp);
-                //  console.log(typeof(self.places_set().filter);
-                //add  places in the filtered list after each new search by considering the filter value
+              //add  places in the filtered list after each new search by considering the filter value
                 var place_added = false;
                 switch (true) {
                     case (self.filterSelected() == 'all'):
@@ -237,25 +223,20 @@ function viewModel() {
         return ratingString;
     }
 
+    //this function applies the selected filter by updating the filtered_places_set array
     self.filterSelected.subscribe(function(newValue) {
-        filterList(newValue);
-    });
-
-    function filterList(stars) {
-        // console.log("filter value is:",stars);
-
-        //do not try to filter is all is reselected and all elements in list are already present
-        if ((stars == 'all') && (self.places_set().length != self.filtered_places_set().length)) {
+          //do not try to filter if "all" option is reselected and all elements in list are already present
+          if ((newValue == 'all') && (self.places_set().length != self.filtered_places_set().length)) {
             console.log('copy all places back in filter list');
             console.log('places length:', self.places_set().length);
             console.log('filtered places length', self.filtered_places_set().lenght);
             for (var i = 0; i < self.places_set().length; i++) {
-                self.filtered_places_set.push(self.places_set()[i]);
-                self.markers_set()[i].setMap(map);
+              self.filtered_places_set.push(self.places_set()[i]);
+              self.markers_set()[i].setMap(map);
             };
-        };
-        //filter if any other option than all is selected
-        if (stars != 'all') {
+          };
+          //filter if any other option than all is selected
+          if (newValue != 'all') {
             console.log('checking values for stars!=all');
 
             self.filtered_places_set.removeAll();
@@ -266,27 +247,26 @@ function viewModel() {
 
             console.log("length of places_set is:", self.places_set().length);
             for (var i = 0; i < self.places_set().length; i++) {
-                // console.log("entering switch, for place:",i);
-                switch (true) {
-                    case ((Math.round(self.places_set()[i].rating) == stars)):
-                        {
-                            // console.log(self.places_set()[i].name," rating is ",self.places_set()[i].rating);
-                            self.filtered_places_set.push(self.places_set()[i]);
-                            self.markers_set()[i].setMap(map);
-                        };
-                        break;
-                    case ((!(self.places_set()[i].hasOwnProperty('rating'))) && (stars == 0)):
-                        {
-                            console.log(self.places_set()[i].name, " rating is ", self.places_set()[i].rating);
-                            self.filtered_places_set.push(self.places_set()[i]);
-                            self.markers_set()[i].setMap(map);
-                        };
-                        break;
-                }
+              // console.log("entering switch, for place:",i);
+              switch (true) {
+                case ((Math.round(self.places_set()[i].rating) == newValue)):
+                {
+                  // console.log(self.places_set()[i].name," rating is ",self.places_set()[i].rating);
+                  self.filtered_places_set.push(self.places_set()[i]);
+                  self.markers_set()[i].setMap(map);
+                };
+                break;
+                case ((!(self.places_set()[i].hasOwnProperty('rating'))) && (newValue == 0)):
+                {
+                  console.log(self.places_set()[i].name, " rating is ", self.places_set()[i].rating);
+                  self.filtered_places_set.push(self.places_set()[i]);
+                  self.markers_set()[i].setMap(map);
+                };
+                break;
+              }
             }
-        };
-    }
-
+          };
+    });
 
 
     // how to identify the index of an object in an array depending on its property value
@@ -297,7 +277,6 @@ function viewModel() {
         var index = self.places_set().map(function(e) {
             return e.id;
         }).indexOf(object_id);
-        // console.log("highlight marker");
         google.maps.event.trigger(self.markers_set()[index], 'mouseover');
 
     };
@@ -307,8 +286,7 @@ function viewModel() {
         var index = self.places_set().map(function(e) {
             return e.id;
         }).indexOf(object_id);
-        // console.log("UN_highlight marker");
-        google.maps.event.trigger(self.markers_set()[index], 'mouseout');
+          google.maps.event.trigger(self.markers_set()[index], 'mouseout');
     };
 
     clickSideImage = function() {
@@ -317,14 +295,12 @@ function viewModel() {
             return e.id;
         }).indexOf(object_id);
         var marker_location = self.places_set()[index].geometry.location;
-        // console.log(marker_location);
         // http://stackoverflow.com/questions/6100514/google-maps-v3-check-if-marker-is-present-on-map
         if (map.getBounds().contains(marker_location) == false) map.panTo(marker_location);
         animateMarker(index);
-        // console.log("clickSideImage");
     }
 
-    dblclickSideImage = function() {
+    clickImageLink = function() {
         var object_id = this.id;
         var index = self.places_set().map(function(e) {
             return e.id;
@@ -333,23 +309,50 @@ function viewModel() {
         // http://stackoverflow.com/questions/6100514/google-maps-v3-check-if-marker-is-present-on-map
         if (map.getBounds().contains(marker_location) == false) map.panTo(marker_location);
         infowindow.close();
-        // console.log("dblclickSideImage");
         if (detailedInfoWindow != undefined) detailedInfoWindow.close();
         detailedInfoWindow = popupCenter(this.url, this.name, 800, 550);
     }
 
     popupCenter = function(url, title, w, h) {
-        //trebuie pus un modal
-
         var left = (screen.width / 2) - (w / 2);
         var top = (screen.height / 2) - (h / 2);
-        // window.close();
         return window.open(url, title, 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width=' + w + ', height=' + h + ', top=' + top + ', left=' + left);
     }
 
+    function createMarker(place, i, mapTrue) {
+        var markerVisible;
+        if (mapTrue == true) markerVisible = map;
+        else markerVisible = null;
+        var defaultIcon = makeMarkerIcon('0091ff');
+        var marker = new google.maps.Marker({
+            map: markerVisible,
+            title: place.title,
+            icon: defaultIcon,
+            animation: google.maps.Animation.DROP,
+            id: i,
+            position: {
+                lat: place.location.lat,
+                lng: place.location.lng
+            }
+        });
 
+        self.markers_set.push(marker); //add markers to the set
+        mapBounds.extend(marker.position);
+        map.fitBounds(mapBounds);
+        google.maps.event.addListener(marker, 'click', function() {
+            this.setIcon(makeMarkerIcon('f27b1f'));
+            getWiki(this, infowindow);
+        });
 
+        google.maps.event.addListener(marker, 'mouseover', function() {
+            this.setIcon(makeMarkerIcon('f27b1f'));
+        });
 
+        google.maps.event.addListener(marker, 'mouseout', function() {
+            this.setIcon(makeMarkerIcon('0091ff'));
+        });
+
+    }
     function animateMarker(i) {
         self.markers_set()[i].icon = makeMarkerIcon('f27b1f');
         for (var j = 0; j < 5; j++) {
@@ -377,46 +380,10 @@ function viewModel() {
     }
 
 
-    function createMarker(place, i, mapTrue) {
-        var markerVisible;
-        if (mapTrue == true) markerVisible = map;
-        else markerVisible = null;
-        var defaultIcon = makeMarkerIcon('0091ff');
-        var marker = new google.maps.Marker({
-            map: markerVisible,
-            title: place.title,
-            icon: defaultIcon,
-            animation: google.maps.Animation.DROP,
-            id: i,
-            position: {
-                lat: place.location.lat,
-                lng: place.location.lng
-            }
-        });
-
-        self.markers_set.push(marker); //add markers to the set
-        mapBounds.extend(marker.position);
-        map.fitBounds(mapBounds);
-        google.maps.event.addListener(marker, 'click', function() {
-            this.setIcon(makeMarkerIcon('f27b1f'));
-            // populateInfoWindow(this, infowindow);
-            getWiki(this, infowindow);
-        });
-
-        google.maps.event.addListener(marker, 'mouseover', function() {
-            this.setIcon(makeMarkerIcon('f27b1f'));
-        });
-
-        google.maps.event.addListener(marker, 'mouseout', function() {
-            this.setIcon(makeMarkerIcon('0091ff'));
-        });
-
-    }
 
 
     function makeMarkerIcon(markerColor) {
-        // console.log("makeMarkerIcon called");
-        var markerImage = new google.maps.MarkerImage(
+            var markerImage = new google.maps.MarkerImage(
             'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|' + markerColor +
             '|40|_|%E2%80%A2',
             new google.maps.Size(21, 34),
@@ -438,8 +405,6 @@ function viewModel() {
             }, 2000);
 
             var wikiURL = 'http://en.wikipedia.org/w/api.php?action=opensearch&search=' + marker.title + '&format=json';
-            // var markerWikiArticleList;
-            // console.log('WIKI request on ',marker.title,' info');
 
             $.ajax(wikiURL, {
                 dataType: "jsonp"
@@ -457,20 +422,15 @@ function viewModel() {
                         htmlInfo += '<p><a class="popup" href="' + markerWikiLink[i] + '">' + markerWikiLinkName[i] + '</a></p>';
                     } else htmlInfo = "<br>No wikipedia info available for this place.";
 
-
                 clearTimeout(wikiRequestTimeout);
                 populateInfoWindow(marker, infowindow, htmlInfo);
             });
 
         }
-        // HOW TO SEARCH IN AN OBSERVABLE ARRAY
-        // http://stackoverflow.com/questions/29667134/knockout-search-in-observable-array
-
 
 
     function populateInfoWindow(marker, infowindow, htmlWikiInfo) {
-        TransitionToNewLocation(marker.internalPosition);
-        //  console.log("wikilink size is: ", wikiLink.length);
+        // TransitionToNewLocation(marker.internalPosition);
         // Check to make sure the infowindow is not already opened on this marker.
         if (infowindow.marker != marker) {
             infowindow.marker = marker;

@@ -71,7 +71,7 @@
         <hr>
         <div id="places" data-bind="foreach: filtered_places_set">
             <div class="placeNameAndImage" data-toggle="tooltip" data-placement="left" data-bind="event: {mouseover: highlightMarker, mouseout: unHighlightMarker, click: clickSideImage}">
-                <a href="javascript:void(0)" class="placeName" data-bind="text: name, attr:{id:id}, event: {click: dblclickSideImage}"></a>
+                <a href="javascript:void(0)" class="placeName" data-bind="text: name, attr:{id:id}, event: {click: clickImageLink}"></a>
                 <br>
                 <span class="ratingStars" data-bind="html: ratingStars"></span>
                 <span class="ratingStars" data-bind="html: ratingFigure"></span>
