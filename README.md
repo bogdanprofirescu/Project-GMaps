@@ -26,7 +26,7 @@ The user can see a street view of the places suggested to visit by clicking on t
 
 * on how to create a side-menu, w3schools - https://www.w3schools.com/howto/howto_js_sidenav.asp
 
-* on how to work with Google APIs, Udacity course on Front End Development - Understanding API Services, https://www.udacity.com/course/front-end-web-developer-nanodegree--nd001
+* on how to work with Google APIs, Udacity course on Front End Development - Understanding API Services (code from Udacity was slightly modified), https://www.udacity.com/course/front-end-web-developer-nanodegree--nd001
 
 * on how to identify the index of an object in an array depending on its property value -  http://stackoverflow.com/questions/8668174/indexof-method-in-an-object-array
 

@@ -5,15 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <title>Places to visit</title>
+    <title>Visit great places!</title>
     <link rel="stylesheet" href="styles.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-
-    <script src="https://maps.googleapis.com/maps/api/js?libraries=places,geometry,drawing&key=AIzaSyARDaZozs7u65RbsBI4Xjwx7jJJ87iUAjY&v=3">
-    </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.2/knockout-min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.2.1.js" integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE=" crossorigin="anonymous"></script>
-
 </head>
 
 <body>
@@ -33,12 +26,12 @@
             <p id="instructions">Enter details below to find great places anywhere in the world!
                 <p>
                     <p class="label">Enter a city:
-                            <input id="areaChoice" placeholder="enter city" value="Vienna" type="text" data-bind="value: destination">
+                            <input id="areaChoice" placeholder="enter city"  type="text" data-bind="value: destination">
                     </p>
                     <p class="label">Range from center:
                         <input id="range" type="text" placeholder="max 50000 meters" data-bind="value: range">
                     </p>
-                    <p class="label">ype of place:
+                    <p class="label">Type of place:
                         <select id="typeOfPlace" data-bind="value: typeOfPlaceSelected">
                             <option value="art gallery">art gallery</option>
                             <option value="bar">bar</option>
@@ -67,8 +60,8 @@
         </p>
         <hr>
         <div id="places" data-bind="foreach: filtered_places_set">
-            <div class="placeNameAndImage" data-toggle="tooltip" data-placement="left" data-bind="event: {mouseover: highlightMarker, mouseout: unHighlightMarker, click: clickSideImage}">
-                <a href="javascript:void(0)" class="placeName" data-bind="text: name, attr:{id:id}, event: {click: clickImageLink}"></a>
+            <div class="placeNameAndImage" data-toggle="tooltip" data-placement="left" data-bind="event: {mouseover: highlightMarker, mouseout: unHighlightMarker, click: clickSideImage, clickBubble: false}">
+                <a href="javascript:void(0)" class="placeName" data-bind="text: name, attr:{id:id}, event: {click: clickImageLink, clickBubble: false}"></a>
                 <br>
                 <span class="ratingStars" data-bind="html: ratingStars"></span>
                 <span class="ratingStars" data-bind="html: ratingFigure"></span>
@@ -78,8 +71,11 @@
             </div>
         </div>
     </div>
-    <script src="app.js">
-    </script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.2/knockout-min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.js" integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE=" crossorigin="anonymous"></script>
+    <script src="app.js"> </script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?libraries=places,geometry,drawing&key=AIzaSyARDaZozs7u65RbsBI4Xjwx7jJJ87iUAjY&v=3&callback=initMap" onerror="googleLoadError()"> </script>
 </body>
 
 </html>

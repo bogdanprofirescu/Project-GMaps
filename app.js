@@ -1,18 +1,27 @@
-function viewModel() {
 
-    var map;
+var map;
+var mapBounds;
+var mapBoundsReset;
+var infowindow;
+var detailedInfoWindow;
+var newCenter;
+var newCenter;
+var clickImageLinkTracker=false;
+function googleLoadError()
+{
+  alert("Google map is not loading. Try to refresh the page later.");
+}
+
+function viewModel() {
     var self = this;
 
-    self.markers_set = ko.observableArray();
-    self.places_set = ko.observableArray();
+    self.markersSet = ko.observableArray();
+    self.placesSet = ko.observableArray();
     self.filtered_places_set = ko.observableArray();
-    self.destination = ko.observable('Vienna');
+    self.destination = ko.observable('New York');
     self.typeOfPlaceSelected = ko.observable();
-    self.range = ko.observable(10000);
+    self.range = ko.observable(5000);
     self.filterSelected = ko.observable('all');
-
-    var infowindow, detailedInfoWindow, newCenter;
-    var mapBounds;
 
     var navigationBar = document.getElementById("navigationBar");
     var start_btn_background = document.getElementById("start_btn_background");
@@ -31,31 +40,6 @@ function viewModel() {
         navigationBar.style.padding = "0";
     }
 
-    function initMap() {
-
-        if (typeof google === 'undefined') alert("google api not loaded");
-
-        map = new google.maps.Map(document.getElementById('map'), {
-            // center: {lat: 45.642024, lng: 25.589116},
-            zoom: 10,
-            mapTypeControlOptions: {
-                style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
-                position: google.maps.ControlPosition.TOP_CENTER
-            },
-            zoomControl: true,
-            zoomControlOptions: {
-                position: google.maps.ControlPosition.RIGHT_CENTER
-            },
-            scaleControl: true,
-            streetViewControl: false,
-            fullscreenControl: true
-        });
-
-        mapBounds = new google.maps.LatLngBounds();
-        mapBoundsReset = new google.maps.LatLngBounds();
-        infowindow = new google.maps.InfoWindow();
-        findNewCenter();
-    };
 
     findNewCenter = function() {
             eraseMarkers();
@@ -152,7 +136,7 @@ function viewModel() {
                     temp.ratingFigure = 'rated yet';
                 }
 
-                self.places_set.push(temp);
+                self.placesSet.push(temp);
               //add  places in the filtered list after each new search by considering the filter value
                 var place_added = false;
                 switch (true) {
@@ -226,13 +210,13 @@ function viewModel() {
     //this function applies the selected filter by updating the filtered_places_set array
     self.filterSelected.subscribe(function(newValue) {
           //do not try to filter if "all" option is reselected and all elements in list are already present
-          if ((newValue == 'all') && (self.places_set().length != self.filtered_places_set().length)) {
+          if ((newValue == 'all') && (self.placesSet().length != self.filtered_places_set().length)) {
             console.log('copy all places back in filter list');
-            console.log('places length:', self.places_set().length);
+            console.log('places length:', self.placesSet().length);
             console.log('filtered places length', self.filtered_places_set().lenght);
-            for (var i = 0; i < self.places_set().length; i++) {
-              self.filtered_places_set.push(self.places_set()[i]);
-              self.markers_set()[i].setMap(map);
+            for (var i = 0; i < self.placesSet().length; i++) {
+              self.filtered_places_set.push(self.placesSet()[i]);
+              self.markersSet()[i].setMap(map);
             };
           };
           //filter if any other option than all is selected
@@ -243,24 +227,24 @@ function viewModel() {
             console.log('filtered_places_set length:', self.filtered_places_set().length);
             // console.log('new filtered array:', self.filtered_places_set());
 
-            for (var j = 0; j < self.markers_set().length; j++) self.markers_set()[j].setMap(null);
+            for (var j = 0; j < self.markersSet().length; j++) self.markersSet()[j].setMap(null);
 
-            console.log("length of places_set is:", self.places_set().length);
-            for (var i = 0; i < self.places_set().length; i++) {
+            console.log("length of places_set is:", self.placesSet().length);
+            for (var i = 0; i < self.placesSet().length; i++) {
               // console.log("entering switch, for place:",i);
               switch (true) {
-                case ((Math.round(self.places_set()[i].rating) == newValue)):
+                case ((Math.round(self.placesSet()[i].rating) == newValue)):
                 {
-                  // console.log(self.places_set()[i].name," rating is ",self.places_set()[i].rating);
-                  self.filtered_places_set.push(self.places_set()[i]);
-                  self.markers_set()[i].setMap(map);
+                  // console.log(self.placesSet()[i].name," rating is ",self.placesSet()[i].rating);
+                  self.filtered_places_set.push(self.placesSet()[i]);
+                  self.markersSet()[i].setMap(map);
                 };
                 break;
-                case ((!(self.places_set()[i].hasOwnProperty('rating'))) && (newValue == 0)):
+                case ((!(self.placesSet()[i].hasOwnProperty('rating'))) && (newValue == 0)):
                 {
-                  console.log(self.places_set()[i].name, " rating is ", self.places_set()[i].rating);
-                  self.filtered_places_set.push(self.places_set()[i]);
-                  self.markers_set()[i].setMap(map);
+                  console.log(self.placesSet()[i].name, " rating is ", self.placesSet()[i].rating);
+                  self.filtered_places_set.push(self.placesSet()[i]);
+                  self.markersSet()[i].setMap(map);
                 };
                 break;
               }
@@ -274,38 +258,46 @@ function viewModel() {
 
     highlightMarker = function() {
         var object_id = this.id;
-        var index = self.places_set().map(function(e) {
+        var index = self.placesSet().map(function(e) {
             return e.id;
         }).indexOf(object_id);
-        google.maps.event.trigger(self.markers_set()[index], 'mouseover');
+        google.maps.event.trigger(self.markersSet()[index], 'mouseover');
 
     };
 
     unHighlightMarker = function() {
         var object_id = this.id;
-        var index = self.places_set().map(function(e) {
+        var index = self.placesSet().map(function(e) {
             return e.id;
         }).indexOf(object_id);
-          google.maps.event.trigger(self.markers_set()[index], 'mouseout');
+          google.maps.event.trigger(self.markersSet()[index], 'mouseout');
     };
 
     clickSideImage = function() {
+//  clickImageLinkTracker  avoids the bubbling of the click event, without it a click on image link trigger also a click on image
+      if (clickImageLinkTracker!=true) {
         var object_id = this.id;
-        var index = self.places_set().map(function(e) {
+        var index = self.placesSet().map(function(e) {
             return e.id;
         }).indexOf(object_id);
-        var marker_location = self.places_set()[index].geometry.location;
+        var marker_location = self.placesSet()[index].geometry.location;
         // http://stackoverflow.com/questions/6100514/google-maps-v3-check-if-marker-is-present-on-map
         if (map.getBounds().contains(marker_location) == false) map.panTo(marker_location);
         animateMarker(index);
+        // http://stackoverflow.com/questions/2730929/how-to-trigger-the-onclick-event-of-a-marker-on-a-google-maps-v3
+        google.maps.event.trigger(self.markersSet()[index], 'click');
+              };
+              clickImageLinkTracker=false;
     }
 
     clickImageLink = function() {
+  //  clickImageLinkTracker  avoids the bubbling of the click event, without it a click on image link trigger also a click on image
+      clickImageLinkTracker=true;
         var object_id = this.id;
-        var index = self.places_set().map(function(e) {
+        var index = self.placesSet().map(function(e) {
             return e.id;
         }).indexOf(object_id);
-        var marker_location = self.places_set()[index].geometry.location;
+        var marker_location = self.placesSet()[index].geometry.location;
         // http://stackoverflow.com/questions/6100514/google-maps-v3-check-if-marker-is-present-on-map
         if (map.getBounds().contains(marker_location) == false) map.panTo(marker_location);
         infowindow.close();
@@ -336,11 +328,19 @@ function viewModel() {
             }
         });
 
-        self.markers_set.push(marker); //add markers to the set
+        self.markersSet.push(marker); //add markers to the set
         mapBounds.extend(marker.position);
         map.fitBounds(mapBounds);
+
         google.maps.event.addListener(marker, 'click', function() {
             this.setIcon(makeMarkerIcon('f27b1f'));
+
+            var object_id = marker.id;
+            var index = self.markersSet().map(function(e) {
+                return e.id;
+            }).indexOf(object_id);
+            animateMarker(index);
+
             getWiki(this, infowindow);
         });
 
@@ -353,11 +353,12 @@ function viewModel() {
         });
 
     }
+
     function animateMarker(i) {
-        self.markers_set()[i].icon = makeMarkerIcon('f27b1f');
+        self.markersSet()[i].icon = makeMarkerIcon('f27b1f');
         for (var j = 0; j < 5; j++) {
-            self.markers_set()[i].setAnimation(google.maps.Animation.BOUNCE);
-            stopAnimation(self.markers_set()[i]);
+            self.markersSet()[i].setAnimation(google.maps.Animation.BOUNCE);
+            stopAnimation(self.markersSet()[i]);
         };
 
         function stopAnimation(marker) {
@@ -367,16 +368,16 @@ function viewModel() {
         };
 
         setTimeout(function() {
-            self.markers_set()[i].setIcon(makeMarkerIcon('0091ff'));
+            self.markersSet()[i].setIcon(makeMarkerIcon('0091ff'));
         }, 6000);
     }
 
 
     function eraseMarkers() {
-        for (var i = 0; i < self.markers_set().length; i++) self.markers_set()[i].setMap(null);
-        self.markers_set.removeAll();
+        for (var i = 0; i < self.markersSet().length; i++) self.markersSet()[i].setMap(null);
+        self.markersSet.removeAll();
         self.filtered_places_set.removeAll();
-        self.places_set.removeAll();
+        self.placesSet.removeAll();
     }
 
 
@@ -394,13 +395,13 @@ function viewModel() {
     };
 
     function getWiki(marker, infowindow) {
-            var markerWikiLink = "Wikipedia info not available for this place";
-            var markerWikiLinkName = "No articles for this place";
+            var markerWikiLink = "Wikipedia access was not possible. Please try late.";
+            var markerWikiLinkName = "There are no Wikipedia articles for this place";
             var htmlInfo = "";
             var maxNoOfArticles;
 
             var wikiRequestTimeout = setTimeout(function() {
-                console.log("Ooops..: Failed to load Wikipedia resources..");
+                console.log("Failed to load Wikipedia resources..");
                 populateInfoWindow(marker, infowindow, markerWikiLink);
             }, 2000);
 
@@ -414,13 +415,12 @@ function viewModel() {
                 markerWikiLink = response[3];
                 if (markerWikiLinkName.length > 3) maxNoOfArticles = 3;
                 else maxNoOfArticles = markerWikiLinkName.length;
-                console.log("#of articles:", markerWikiLinkName.length);
-                console.log("max no of articles: ", maxNoOfArticles);
+                // console.log("#of articles:", markerWikiLinkName.length);
+                // console.log("max no of articles: ", maxNoOfArticles);
                 if (markerWikiLinkName.length != 0)
                     for (var i = 0; i < maxNoOfArticles; i++) {
-                        // htmlInfo+='<li><a href="'+markerWikiLink[i]+'" target="_blank">'+markerWikiLinkName[i]+'</a></li>';
-                        htmlInfo += '<p><a class="popup" href="' + markerWikiLink[i] + '">' + markerWikiLinkName[i] + '</a></p>';
-                    } else htmlInfo = "<br>No wikipedia info available for this place.";
+                            htmlInfo += '<p><a class="popup" href="' + markerWikiLink[i] + '" target="_blank">' + markerWikiLinkName[i] + '</a></p>';
+                    } else htmlInfo = "<br>sorry, no wikipedia info available for this place.";
 
                 clearTimeout(wikiRequestTimeout);
                 populateInfoWindow(marker, infowindow, htmlInfo);
@@ -430,7 +430,7 @@ function viewModel() {
 
 
     function populateInfoWindow(marker, infowindow, htmlWikiInfo) {
-        // TransitionToNewLocation(marker.internalPosition);
+
         // Check to make sure the infowindow is not already opened on this marker.
         if (infowindow.marker != marker) {
             infowindow.marker = marker;
@@ -451,7 +451,7 @@ function viewModel() {
                     if (status == google.maps.StreetViewStatus.OK) {
                         var nearStreetViewLocation = data.location.latLng;
                         var heading = google.maps.geometry.spherical.computeHeading(nearStreetViewLocation, marker.position);
-                        infowindow.setContent("<div>" + marker.title + "</div><div id=\"pano\"></div>" + "<div>" + htmlWikiInfo + "</div>");
+                        infowindow.setContent("<div>" + marker.title + "</div><div id=\"pano\"></div>" +"<div>"+'<strong><a href="https://en.wikipedia.org/wiki/Main_Page">Wikipedia links:</a></strong>'+"</div>"+ "<div>" + htmlWikiInfo + "</div>");
                         var panoramaOptions = {
                             position: nearStreetViewLocation,
                             pov: {
@@ -474,7 +474,30 @@ function viewModel() {
         }
     }
 
-    initMap();
+    findNewCenter();
 }
 
-ko.applyBindings(new viewModel());
+function initMap() {
+    // console.log("entered initmap");
+    if (typeof google === 'undefined') alert("google api not loaded");
+
+    map = new google.maps.Map(document.getElementById('map'), {
+        zoom: 10,
+        mapTypeControlOptions: {
+            style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
+            position: google.maps.ControlPosition.TOP_CENTER
+        },
+        zoomControl: true,
+        zoomControlOptions: {
+            position: google.maps.ControlPosition.RIGHT_CENTER
+        },
+        scaleControl: true,
+        streetViewControl: false,
+        fullscreenControl: true
+    });
+
+    mapBounds = new google.maps.LatLngBounds();
+    mapBoundsReset = new google.maps.LatLngBounds();
+    infowindow = new google.maps.InfoWindow();
+    ko.applyBindings(new viewModel());
+};
