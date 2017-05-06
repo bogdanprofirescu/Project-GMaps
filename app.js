@@ -392,14 +392,14 @@ function viewModel() {
     };
 
     function getWiki(marker, infowindow) {
-            var markerWikiLink = "Wikipedia access was not possible. Please try again later .";
+            var markerWikiLink = "Wikipedia access was not possible./n Please try again later .";
             var markerWikiLinkName = "There are no Wikipedia articles for this place";
             var htmlInfo = "";
             var maxNoOfArticles;
 
             var wikiRequestTimeout = setTimeout(function() {
                     populateInfoWindow(marker, infowindow, markerWikiLink);
-            }, 3500);
+            }, 10000);
 
             var wikiURL = 'http://en.wikipedia.org/w/api.php?action=opensearch&search=' + marker.title + '&format=json';
 
