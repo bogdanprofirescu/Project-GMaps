@@ -403,7 +403,7 @@ function viewModel() {
             var wikiRequestTimeout = setTimeout(function() {
                 console.log("Failed to load Wikipedia resources..");
                 populateInfoWindow(marker, infowindow, markerWikiLink);
-            }, 2000);
+            }, 3500);
 
             var wikiURL = 'http://en.wikipedia.org/w/api.php?action=opensearch&search=' + marker.title + '&format=json';
 
