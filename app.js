@@ -88,7 +88,7 @@ function viewModel() {
                     alert("Sorry, no place identified. Try to modify range and/or city");
                     // TREBUIE UN MODAL AICI
                 }
-                console.log("#places identified:", results.length);
+
             }
         }
     }
@@ -123,7 +123,7 @@ function viewModel() {
                     });
 
                 } catch (e) {
-                    console.log('no picture for:', place.name);
+
                     temp.srcURL = 'placeholder.png';
                 }
 
@@ -131,7 +131,7 @@ function viewModel() {
                     temp.ratingStars = createRatingForPlace(place);
                     temp.ratingFigure = temp.rating;
                 } else {
-                    console.log(place.name," has no rating property");
+
                     temp.ratingStars = 'not';
                     temp.ratingFigure = 'rated yet';
                 }
@@ -211,9 +211,7 @@ function viewModel() {
     self.filterSelected.subscribe(function(newValue) {
           //do not try to filter if "all" option is reselected and all elements in list are already present
           if ((newValue == 'all') && (self.placesSet().length != self.filtered_places_set().length)) {
-            console.log('copy all places back in filter list');
-            console.log('places length:', self.placesSet().length);
-            console.log('filtered places length', self.filtered_places_set().lenght);
+
             for (var i = 0; i < self.placesSet().length; i++) {
               self.filtered_places_set.push(self.placesSet()[i]);
               self.markersSet()[i].setMap(map);
@@ -221,28 +219,27 @@ function viewModel() {
           };
           //filter if any other option than all is selected
           if (newValue != 'all') {
-            console.log('checking values for stars!=all');
+
 
             self.filtered_places_set.removeAll();
-            console.log('filtered_places_set length:', self.filtered_places_set().length);
-            // console.log('new filtered array:', self.filtered_places_set());
+
 
             for (var j = 0; j < self.markersSet().length; j++) self.markersSet()[j].setMap(null);
 
-            console.log("length of places_set is:", self.placesSet().length);
+
             for (var i = 0; i < self.placesSet().length; i++) {
-              // console.log("entering switch, for place:",i);
+
               switch (true) {
                 case ((Math.round(self.placesSet()[i].rating) == newValue)):
                 {
-                  // console.log(self.placesSet()[i].name," rating is ",self.placesSet()[i].rating);
+
                   self.filtered_places_set.push(self.placesSet()[i]);
                   self.markersSet()[i].setMap(map);
                 };
                 break;
                 case ((!(self.placesSet()[i].hasOwnProperty('rating'))) && (newValue == 0)):
                 {
-                  console.log(self.placesSet()[i].name, " rating is ", self.placesSet()[i].rating);
+
                   self.filtered_places_set.push(self.placesSet()[i]);
                   self.markersSet()[i].setMap(map);
                 };
@@ -401,8 +398,7 @@ function viewModel() {
             var maxNoOfArticles;
 
             var wikiRequestTimeout = setTimeout(function() {
-                console.log("Failed to load Wikipedia resources..");
-                populateInfoWindow(marker, infowindow, markerWikiLink);
+                    populateInfoWindow(marker, infowindow, markerWikiLink);
             }, 3500);
 
             var wikiURL = 'http://en.wikipedia.org/w/api.php?action=opensearch&search=' + marker.title + '&format=json';
@@ -415,8 +411,6 @@ function viewModel() {
                 markerWikiLink = response[3];
                 if (markerWikiLinkName.length > 3) maxNoOfArticles = 3;
                 else maxNoOfArticles = markerWikiLinkName.length;
-                // console.log("#of articles:", markerWikiLinkName.length);
-                // console.log("max no of articles: ", maxNoOfArticles);
                 if (markerWikiLinkName.length != 0)
                     for (var i = 0; i < maxNoOfArticles; i++) {
                             htmlInfo += '<p><a class="popup" href="' + markerWikiLink[i] + '" target="_blank">' + markerWikiLinkName[i] + '</a></p>';
@@ -468,8 +462,7 @@ function viewModel() {
                 // Use streetview service to get the closest streetview image within
                 // 50 meters of the markers position
             streetViewService.getPanoramaByLocation(marker.position, radius, getStreetView);
-            //  console.log(infowindow);
-            // Open the infowindow on the correct marker.
+
             infowindow.open(map, marker);
         }
     }
@@ -478,7 +471,7 @@ function viewModel() {
 }
 
 function initMap() {
-    // console.log("entered initmap");
+
     if (typeof google === 'undefined') alert("google api not loaded");
 
     map = new google.maps.Map(document.getElementById('map'), {

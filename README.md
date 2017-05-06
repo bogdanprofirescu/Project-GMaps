@@ -1,9 +1,8 @@
-
 1. How to run the app
 
   The app has all the files needed to run in a single master folder named: "Project GMaps".
   Open from within a browser, such as Chrome or Firefox, the file named index.html which resides in the main folder, "Project GMaps".
-
+   Alternativelly, use this link: https://bogdanprofirescu.github.io/Project-GMaps/ ;  
 
 2. How to work with the app
 
