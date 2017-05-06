@@ -395,7 +395,7 @@ function viewModel() {
     };
 
     function getWiki(marker, infowindow) {
-            var markerWikiLink = "Wikipedia access was not possible. Please try late.";
+            var markerWikiLink = "Wikipedia access was not possible. Please try again later .";
             var markerWikiLinkName = "There are no Wikipedia articles for this place";
             var htmlInfo = "";
             var maxNoOfArticles;
